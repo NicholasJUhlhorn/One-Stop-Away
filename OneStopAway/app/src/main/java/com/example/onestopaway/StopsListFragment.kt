@@ -13,7 +13,7 @@ import com.example.onestopaway.placeholder.PlaceholderContent
 /**
  * A fragment representing a list of Items.
  */
-class StopsFragment : Fragment() {
+class StopsListFragment : Fragment() {
 
     private var columnCount = 1
 
@@ -52,7 +52,7 @@ class StopsFragment : Fragment() {
         // TODO: Customize parameter initialization
         @JvmStatic
         fun newInstance(columnCount: Int) =
-            StopsFragment().apply {
+            StopsListFragment().apply {
                 arguments = Bundle().apply {
                     putInt(ARG_COLUMN_COUNT, columnCount)
                 }
