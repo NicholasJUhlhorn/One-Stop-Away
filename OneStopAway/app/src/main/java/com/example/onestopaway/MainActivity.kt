@@ -3,16 +3,21 @@ package com.example.onestopaway
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.annotation.RequiresApi
 import org.json.JSONArray
 import org.json.JSONObject
 import java.net.URL
 import java.time.LocalTime
+import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
+import java.util.*
 import kotlin.concurrent.thread
 
 val STOPURL = "https://api.ridewta.com/stops"
-val ROUTEURL = ""
+val ROUTEURL = "https://raw.githubusercontent.com/whatcomtrans/publicwtadata/master/GTFS/wta_gtfs_latest/stop_times.txt"
 
 class DatabaseManager(context: Context) : SQLiteOpenHelper(context, "Database", null, 1){
     override fun onCreate(db: SQLiteDatabase?) {
@@ -34,6 +39,7 @@ class DatabaseManager(context: Context) : SQLiteOpenHelper(context, "Database", 
 }
 
 class MainActivity : AppCompatActivity() {
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -49,6 +55,25 @@ class MainActivity : AppCompatActivity() {
             for(i in 0..(arrayStop.length() - 1)){
                 obj = arrayStop.getJSONObject(i)
                 dbman.insertStop(obj.getInt("stopNum"), obj.getString("name"), obj.getDouble("longitude"), obj.getDouble("latitutde"), obj.getString("locality"))
+            }
+
+            val Rurl = URL(ROUTEURL)
+            val scanner = Scanner(Rurl.openStream())
+
+            var line: String
+            var split: List<String>
+
+            var arrive: LocalTime
+            var departure: LocalTime
+            scanner.nextLine()
+            while(scanner.hasNextLine()){
+                line = scanner.nextLine()
+                split = line.split(",")
+
+                arrive = LocalTime.parse(split[1], DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT))
+                departure = LocalTime.parse(split[2], DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT))
+
+                dbman.insertRoute(split[0].toInt(), arrive, departure, split[3].toInt())
             }
         }
     }
