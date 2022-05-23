@@ -15,6 +15,7 @@ import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 import java.util.*
 import kotlin.concurrent.thread
+import kotlinx.coroutines.*
 
 val STOPURL = "https://api.ridewta.com/stops"
 val ROUTEURL = "https://raw.githubusercontent.com/whatcomtrans/publicwtadata/master/GTFS/wta_gtfs_latest/stop_times.txt"
@@ -45,8 +46,10 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         val dbman = DatabaseManager(this)
+    }
 
-        thread{
+    suspend fun runDatabase(dbman: DatabaseManager) = coroutineScope{
+        launch{
             val Surl = URL(STOPURL)
             val content = Surl.readText()
 
