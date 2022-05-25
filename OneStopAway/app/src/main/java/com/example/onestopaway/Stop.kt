@@ -4,6 +4,7 @@
 package com.example.onestopaway
 
 import kotlin.math.abs
+import kotlin.math.ceil
 
 /**
  * A class that contains the data for a Stop
@@ -14,6 +15,8 @@ import kotlin.math.abs
  * @constructor Creates a stop based on the given id, name, latitude, and longitude
  */
 class Stop {
+    // Constants
+    val DEGREES_TO_MILES = 69 // Nice
     // Variables
     private var _name: String = "Default Name"
     private var _id: Int = 0
@@ -53,9 +56,25 @@ class Stop {
      * Gets the estimated time until the next bus arrives
      * @return the estimated time until the next bus arrives at the stop in minutes
      */
-    fun getTimeUntilNextBus(): Int{
-        // TODO: Implement this function
-        return 0
+    fun getTimeUntilNextBus(): Int {
+        // Get buses that are on the route
+        // TODO: get actual buses on route
+        val buses = listOf<Bus>(
+            Bus(
+                0, "Dummy Bus", 10.0, 0.0, 0.0,
+                Stop(0, "Dummy Stop", 0.0, 0.0)
+            )
+        )
+
+        // Get the bus that is next
+        // TODO: get the actual bus
+        val bus = buses[0]
+
+        // Get eta
+        val distance = getDistance(bus.latitude, bus.longitude) * DEGREES_TO_MILES
+
+        // return the eta
+        return ceil(distance / bus.speed).toInt()
     }
 
 }
