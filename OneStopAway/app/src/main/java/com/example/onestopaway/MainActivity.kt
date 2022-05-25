@@ -80,4 +80,9 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
+
+    fun addOne(number: Int): Int{
+        return number +1
+    }
+
 }
