@@ -13,6 +13,7 @@ package com.example.onestopaway
 class Route {
     // Constants
     val DEGREES_TO_MILES = 69 // Nice
+
     // Variables
     private var _name = "Default Name"
     private var _id: Int = 0
