@@ -44,6 +44,4 @@ class Route {
         _stops = listOf(Stop(0, "Dummy Stop", 0.0, 0.0))
     }
 
-
-
 }

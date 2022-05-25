@@ -54,10 +54,10 @@ class Stop {
     }
 
     /**
-     * Gets the estimated time until the next bus arrives
+     * Gets the estimated real time until the next bus arrives
      * @return the estimated time until the next bus arrives at the stop in minutes
      */
-    fun getTimeUntilNextBus(): Int {
+    fun getTimeUntilNextBusRealTime(): Int {
         // Get buses that are on the route
         // TODO: get actual buses on route
         val buses = listOf<Bus>(
@@ -76,6 +76,15 @@ class Stop {
 
         // return the eta
         return ceil(distance / bus.speed).toInt()
+    }
+
+    /**
+     * Gets the estimated time until the next bus arrives based on scheduled time
+     * @return the estimated time until the next bus arrives at the stop in minutes
+     */
+    fun getTimeUntilNextBus(): Int {
+        // TODO: Implement this
+        return 0
     }
 
 }
