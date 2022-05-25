@@ -3,7 +3,9 @@
 // CSCI 412
 package com.example.onestopaway
 
-class TransitItemsViewModel {
+import androidx.lifecycle.ViewModel
+
+class TransitItemsViewModel: ViewModel() {
 
     var _stops = mutableListOf<Stop>()
     var _routes = mutableListOf<Route>()
