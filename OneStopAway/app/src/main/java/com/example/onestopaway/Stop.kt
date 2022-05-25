@@ -17,6 +17,7 @@ import kotlin.math.ceil
 class Stop {
     // Constants
     val DEGREES_TO_MILES = 69 // Nice
+
     // Variables
     private var _name: String = "Default Name"
     private var _id: Int = 0
