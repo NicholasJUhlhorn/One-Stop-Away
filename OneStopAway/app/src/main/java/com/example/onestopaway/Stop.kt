@@ -1,4 +1,61 @@
+// Nicholas J Uhlhorn
+// May 2022
+// CSCI 412
 package com.example.onestopaway
 
+import kotlin.math.abs
+
+/**
+ * A class that contains the data for a Stop
+ * @param name The name of the stop
+ * @param id The id of the stop
+ * @param latitude The latitude where the stop is located
+ * @param longitude The longitude where the stop is located
+ * @constructor Creates a stop based on the given id, name, latitude, and longitude
+ */
 class Stop {
+    // Variables
+    private var _name: String = "Default Name"
+    private var _id: Int = 0
+    private var _latitude: Double = 0.0
+    private var _longitude: Double = 0.0
+
+    // Getters and (Setters)
+    val name
+        get() = _name
+    val id
+        get() = _id
+    val latitude
+        get() = _latitude
+    val longitude
+        get() = _longitude
+
+    // Constructor
+    constructor(id: Int, name: String, latitude: Double, longitude: Double){
+        _id = id
+        _name = name
+        _longitude = latitude
+        _longitude = longitude
+    }
+
+    // Functions
+    /**
+     * Gets the Manhattan distance to this stop from the given latitude and longitude
+     * @param latitude latitude of current location
+     * @param longitude longitude of current location
+     * @return the Manhattan distance from the given location to the stop in degrees
+     */
+    fun getDistance(latitude: Double, longitude: Double): Double{
+        return abs(_latitude - latitude) + abs(_longitude - longitude)
+    }
+
+    /**
+     * Gets the estimated time until the next bus arrives
+     * @return the estimated time until the next bus arrives at the stop in minutes
+     */
+    fun getTimeUntilNextBus(): Int{
+        // TODO: Implement this function
+        return 0
+    }
+
 }
