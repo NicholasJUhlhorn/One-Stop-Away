@@ -1,8 +1,5 @@
 package com.example.onestopaway
 
-import android.content.Context
-import android.database.sqlite.SQLiteDatabase
-import android.database.sqlite.SQLiteOpenHelper
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -18,26 +15,8 @@ import kotlin.concurrent.thread
 import kotlinx.coroutines.*
 
 val STOPURL = "https://api.ridewta.com/stops"
+val TRIPURL = "https://github.com/whatcomtrans/publicwtadata/blob/master/GTFS/wta_gtfs_latest/trips.txt"
 val ROUTEURL = "https://raw.githubusercontent.com/whatcomtrans/publicwtadata/master/GTFS/wta_gtfs_latest/stop_times.txt"
-
-class DatabaseManager(context: Context) : SQLiteOpenHelper(context, "Database", null, 1){
-    override fun onCreate(db: SQLiteDatabase?) {
-        db?.execSQL("CREATE TABLE IF NOT EXISTS STOP(stop_number, name, latitude, longitude, locality)")
-        db?.execSQL("CREATE TABLE IF NOT EXISTS ROUTE(id, arrival_time, departure_time, stop_id)")
-    }
-
-    override fun onUpgrade(p0: SQLiteDatabase?, p1: Int, p2: Int) {
-        TODO("Not yet implemented")
-    }
-
-    fun insertStop(number: Int, nm: String, lat: Double, long: Double, loc:String){
-        writableDatabase.execSQL("INSERT INTO STOP VALUES($number, $nm, $lat, $long, $loc)")
-    }
-
-    fun insertRoute(id: Int, at: LocalTime, dt: LocalTime, stop: Int){
-        writableDatabase.execSQL("INSERT INTO ROUTE VALUES($id, $at, $dt, $stop)")
-    }
-}
 
 class MainActivity : AppCompatActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
@@ -50,6 +29,7 @@ class MainActivity : AppCompatActivity() {
 
     suspend fun runDatabase(dbman: DatabaseManager) = coroutineScope{
         launch{
+            //Populates Stop Table
             val Surl = URL(STOPURL)
             val content = Surl.readText()
 
@@ -57,9 +37,24 @@ class MainActivity : AppCompatActivity() {
             var obj: JSONObject
             for(i in 0..(arrayStop.length() - 1)){
                 obj = arrayStop.getJSONObject(i)
-                dbman.insertStop(obj.getInt("stopNum"), obj.getString("name"), obj.getDouble("longitude"), obj.getDouble("latitutde"), obj.getString("locality"))
+                dbman.insertStop(obj.getInt("stopNum"), obj.getString("name"), obj.getDouble("longitude"), obj.getDouble("latitutde"), obj.getString("locality"), 0)
             }
 
+            //Populates Trip Table
+            val Turl = URL(TRIPURL)
+            val scan = Scanner(Turl.openStream())
+
+            var ln: String
+            var spt: List<String>
+
+            while(scan.hasNextLine()){
+                ln = scan.nextLine()
+                spt = ln.split(",")
+
+                TODO("Populate Trip Table")
+            }
+
+            //Populates Route Table
             val Rurl = URL(ROUTEURL)
             val scanner = Scanner(Rurl.openStream())
 
@@ -73,10 +68,11 @@ class MainActivity : AppCompatActivity() {
                 line = scanner.nextLine()
                 split = line.split(",")
 
-                arrive = LocalTime.parse(split[1], DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT))
-                departure = LocalTime.parse(split[2], DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT))
+                //Converts String into Time Format
+                //arrive = LocalTime.parse(split[1], DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT))
+                //departure = LocalTime.parse(split[2], DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT))
 
-                dbman.insertRoute(split[0].toInt(), arrive, departure, split[3].toInt())
+                dbman.insertRoute(split[0].toInt(), split[1], split[2], split[3].toInt(), 0)
             }
         }
     }
