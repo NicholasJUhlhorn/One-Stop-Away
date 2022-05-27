@@ -1,5 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="..\:/Users/Ian/Documents/Code/one-stop-away/OneStopAway/app/src/main/res/layout-land/activity_main.xml" value="0.3691432396251673" />
+        <entry key="..\:/Users/Ian/Documents/Code/one-stop-away/OneStopAway/app/src/main/res/layout/activity_main.xml" value="0.5744791666666667" />
+        <entry key="..\:/Users/Ian/Documents/Code/one-stop-away/OneStopAway/app/src/main/res/layout/activity_route_detail.xml" value="0.25" />
+        <entry key="..\:/Users/Ian/Documents/Code/one-stop-away/OneStopAway/app/src/main/res/layout/activity_stop_detail.xml" value="0.2793819655521783" />
+        <entry key="..\:/Users/Ian/Documents/Code/one-stop-away/OneStopAway/app/src/main/res/layout/fragment_favorites.xml" value="0.5744791666666667" />
+        <entry key="..\:/Users/Ian/Documents/Code/one-stop-away/OneStopAway/app/src/main/res/layout/fragment_maps.xml" value="0.5604166666666667" />
+        <entry key="..\:/Users/Ian/Documents/Code/one-stop-away/OneStopAway/app/src/main/res/layout/fragment_route.xml" value="0.5744791666666667" />
+        <entry key="..\:/Users/Ian/Documents/Code/one-stop-away/OneStopAway/app/src/main/res/layout/fragment_route_list.xml" value="0.5744791666666667" />
+        <entry key="..\:/Users/Ian/Documents/Code/one-stop-away/OneStopAway/app/src/main/res/layout/fragment_stop_details.xml" value="0.5744791666666667" />
+        <entry key="..\:/Users/Ian/Documents/Code/one-stop-away/OneStopAway/app/src/main/res/layout/fragment_stops.xml" value="0.5744791666666667" />
+        <entry key="..\:/Users/Ian/Documents/Code/one-stop-away/OneStopAway/app/src/main/res/layout/fragment_stops_list.xml" value="0.5604166666666667" />
+        <entry key="..\:/Users/Ian/Documents/Code/one-stop-away/OneStopAway/app/src/main/res/menu/bottom_nav_menu.xml" value="0.5734375" />
+      </map>
+    </option>
+  </component>
   <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="Android Studio default JDK" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>
