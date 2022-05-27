@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/routes"
+        android:title="@string/routes"
+        android:icon="@drawable/route_image"
+        />
+    <item
+        android:id="@+id/favorites"
+        android:title="@string/favorites"
+        android:icon="@drawable/star_favorite"/>
+    <item
+        android:id="@+id/stops"
+        android:title="@string/stops"
+        android:icon="@drawable/bus_stop"
+       />
+
+</menu>
