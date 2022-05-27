@@ -84,13 +84,13 @@ class DatabaseManager(context: Context) : SQLiteOpenHelper(context, "Database", 
     }
 
     //Gets stops based on route id
-    fun getStopsOnRoute(id: Int): List<String>{
-        val result = mutableListOf<String>()
+    fun getStopsOnRoute(id: Int): List<List<String>>{
+        val result = mutableListOf<List<String>>()
 
         TODO("JOIN SQL TABLES FOR QUERY")
         val cursor = writableDatabase.rawQuery("SELECT A.name FROM STOP", null)
         while(cursor.moveToNext()){
-            result.add(cursor.getString(0))
+            result.add(listOf(cursor.getString(0)))
         }
 
         return result
