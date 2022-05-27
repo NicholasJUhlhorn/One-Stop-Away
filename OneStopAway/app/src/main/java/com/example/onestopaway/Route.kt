@@ -28,22 +28,10 @@ class Route {
         get() = _stops
 
     // Constructor
-    constructor(id: Int, name: String){
+    constructor(id: Int, name: String, stops: List<Stop>){
         _id = id
         _name = name
-        populateStops()
+        _stops = stops
     }
-
-    // Functions
-
-    /**
-     * populates _stops based on the route's id
-     */
-    private fun populateStops() {
-        // TODO: Get list of stops and set _stops to that list
-        _stops = listOf(Stop(0, "Dummy Stop", 0.0, 0.0))
-    }
-
-
 
 }
