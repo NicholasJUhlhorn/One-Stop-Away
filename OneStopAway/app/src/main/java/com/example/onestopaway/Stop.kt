@@ -87,4 +87,13 @@ class Stop {
         return 0
     }
 
+    /**
+     * Compares the values of this Stop with another and returns true if all fields are equal
+     * @param otherStop The other Stop that this Stop is being compared to
+     * @return a boolean representing if the stops have equal fields
+     */
+    fun compareStop(otherStop: Stop): Boolean{
+        return (_id == otherStop.id && _name == otherStop.name && _latitude == otherStop.latitude && _longitude == otherStop.longitude)
+    }
+
 }
