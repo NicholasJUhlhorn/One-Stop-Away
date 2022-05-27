@@ -38,7 +38,7 @@ class Stop {
     constructor(id: Int, name: String, latitude: Double, longitude: Double){
         _id = id
         _name = name
-        _longitude = latitude
+        _latitude = latitude
         _longitude = longitude
     }
 
@@ -50,7 +50,7 @@ class Stop {
      * @return the Manhattan distance from the given location to the stop in degrees
      */
     fun getDistance(latitude: Double, longitude: Double): Double{
-        return abs(_latitude - latitude) + abs(_longitude - longitude)
+        return (abs(_latitude - latitude) + abs(_longitude - longitude)) * DEGREES_TO_MILES
     }
 
     /**
