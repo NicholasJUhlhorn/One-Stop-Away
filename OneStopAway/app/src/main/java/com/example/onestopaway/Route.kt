@@ -31,6 +31,7 @@ class Route {
     constructor(id: Int, name: String, stops: List<Stop>){
         _id = id
         _name = name
+
         _stops = stops
     }
 

@@ -5,8 +5,14 @@ import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import androidx.appcompat.app.AppCompatActivity
 import java.time.LocalTime
+import kotlin.coroutines.coroutineContext
 
-class DatabaseManager(context: Context) : SQLiteOpenHelper(context, "Database", null, 1){
+class DatabaseManager constructor(context: Context) : SQLiteOpenHelper(context, "database", null, 1) {
+
+
+
+
+
     override fun onCreate(db: SQLiteDatabase?) {
         db?.execSQL("CREATE TABLE IF NOT EXISTS STOP(stop_number, name, latitude, longitude, locality, favorite)")
         db?.execSQL("CREATE TABLE IF NOT EXISTS TRIP(id)")
@@ -19,7 +25,7 @@ class DatabaseManager(context: Context) : SQLiteOpenHelper(context, "Database", 
 
     //INSERT TO TABLES
     fun insertStop(number: Int, nm: String, lat: Double, long: Double, loc: String, fav: Int){
-        writableDatabase.execSQL("INSERT INTO STOP VALUES($number, $nm, $lat, $long, $loc, $fav)")
+        writableDatabase.execSQL("INSERT INTO STOP VALUES($number, \"$nm\", $lat, $long, \"$loc\", $fav)")
     }
 
     fun insertTrip(id: Int){
@@ -27,7 +33,7 @@ class DatabaseManager(context: Context) : SQLiteOpenHelper(context, "Database", 
     }
 
     fun insertRoute(id: Int, at: String, dt: String, stop: Int, fav: Int){
-        writableDatabase.execSQL("INSERT INTO ROUTE VALUES($id, $at, $dt, $stop, $fav)")
+        writableDatabase.execSQL("INSERT INTO ROUTE VALUES($id, \"$at\", \"$dt\", $stop, $fav)")
     }
 
     //READ FROM TABLES
