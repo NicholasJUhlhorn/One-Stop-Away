@@ -106,8 +106,17 @@ class TransitItemsViewModel(context: Context): ViewModel() {
         val routeId =   routeData[0].toInt()
         val routeName = routeData[1]
 
+        // Get Route Stops
+        val stopData = _databaseManager.getStopsOnRoute(routeId)
+        val routeStops = mutableListOf<Stop>()
+
+        stopData.forEach {
+            // Make stop from row
+            routeStops.add(makeStopFromDB(it))
+        }
+
         // Make route and return
-        return Route(routeId, routeName)
+        return Route(routeId, routeName, routeStops)
     }
 
 }
