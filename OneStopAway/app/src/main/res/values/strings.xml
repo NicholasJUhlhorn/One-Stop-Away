@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">OneStopAway</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_stop_detail">StopDetailActivity</string>
+    <string name="stop_list_text">List of stops for route: %1$s</string>
+    <string name="stops">Stops</string>
+    <string name="favorites">Favorites</string>
+    <string name="routes">Routes</string>
 </resources>
