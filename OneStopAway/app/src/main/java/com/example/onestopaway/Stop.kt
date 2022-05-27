@@ -86,7 +86,7 @@ class Stop {
         // TODO: Implement this
         return 0
     }
-
+    
     /**
      * Compares the values of this Stop with another and returns true if all fields are equal
      * @param otherStop The other Stop that this Stop is being compared to
