@@ -14,87 +14,43 @@ import java.util.*
 
 class DatabaseManagerTest {
     private lateinit var db : DatabaseManager
-    val STOPURL = "https://github.com/whatcomtrans/publicwtadata/blob/master/GTFS/wta_gtfs_latest/stops.txt"
-    val TRIPURL = "https://github.com/whatcomtrans/publicwtadata/blob/master/GTFS/wta_gtfs_latest/trips.txt"
-    val ROUTEURL = "https://raw.githubusercontent.com/whatcomtrans/publicwtadata/master/GTFS/wta_gtfs_latest/stop_times.txt"
+    private lateinit var repository: DataRepository
 
     @Before
     fun setUp() {
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
         db = DatabaseManager(appContext)
-        db.onCreate(db.writableDatabase)
+        db.clearDBAndRecreate()
+        repository = DataRepository(db)
+
 
     }
 
     @Test
     fun stopsAreAdded() {
-        populateStops(db)
+        repository.populateStops()
 
-        assertTrue(db.readAllStops().size > 1 )
+        assertTrue(repository.numStopsFetched > 1)
+        assertEquals(db.readAllStops().size, repository.numStopsFetched)
+
     }
 
     @Test
     fun tripsAreAdded() {
-        populateTrips(db)
+        repository.populateTrips()
 
-        assertTrue(db.readAllTrips().size > 1)
+        assertTrue(repository.numTripsFetched > 1)
+        assertEquals(db.readAllTrips().size, repository.numTripsFetched)
+
     }
 
     @Test
     fun routesAreAdded() {
-        populateRoutes(db)
+        repository.populateRoutes()
 
-        val sample_route =
-        assertTrue(db.readAllStops().size > 1)
+        assertTrue(repository.numRoutesFetched > 1)
+        assertEquals(db.readAllRoutes().size, repository.numRoutesFetched)
 
-    }
-
-    fun populateStops(dbman : DatabaseManager) {
-        val Surl = URL(STOPURL)
-        val scn = Scanner(Surl.openStream())
-
-        var Line: String
-        var Split: List<String>
-
-        scn.nextLine()
-        while(scn.hasNextLine()){
-            Line = scn.nextLine()
-            Split = Line.split(",")
-
-            dbman.insertStop(Split[0].toInt(), Split[2], Split[4], Split[5], 0)
-        }
-    }
-
-    fun populateTrips(dbman : DatabaseManager) {
-        val Turl = URL(TRIPURL)
-        val scan = Scanner(Turl.openStream())
-
-        var ln: String
-        var spt: List<String>
-
-        scan.nextLine()
-        while(scan.hasNextLine()){
-            ln = scan.nextLine()
-            spt = ln.split(",")
-
-            dbman.insertTrip(spt[0].toInt(), spt[3])
-        }
-    }
-
-    fun populateRoutes(dbman: DatabaseManager) {
-        val Rurl = URL(ROUTEURL)
-        val scanner = Scanner(Rurl.openStream())
-
-        var line: String
-        var split: List<String>
-
-        scanner.nextLine()
-        while(scanner.hasNextLine()){
-            line = scanner.nextLine()
-            split = line.split(",")
-
-            dbman.insertRoute(split[0].toInt(), split[1], split[2], split[3].toInt(), 0)
-        }
     }
 
     @After

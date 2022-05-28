@@ -34,5 +34,11 @@ class Route {
 
         _stops = stops
     }
-
+    companion object {
+        const val NAME = "head_sign"
+        const val TRIP_ID_COL = "trip_id"
+        const val ARRIVAL_TIME_COL = "arrival_time"
+        const val DEP_TIME_COL = "departure_time"
+        const val FAV_COL = "favorite"
+    }
 }

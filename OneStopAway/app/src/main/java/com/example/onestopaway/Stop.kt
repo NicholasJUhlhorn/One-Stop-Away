@@ -45,11 +45,10 @@ class Stop {
     companion object {
         val NUMBER_COL = "stop_number"
         const val NAME_COL = "name"
-        const val ID_COL = "id"
+        const val ID_COL = "stop_id"
         const val LAT_COL = "latitude"
         const val LONG_COL = "longitude"
-        const val LOCALITY_COL = "locality"
-        const val FAV_COL = "favorited"
+        const val FAV_COL = "favorite"
     }
 
     // Functions

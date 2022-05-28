@@ -1,22 +1,40 @@
 package com.example.onestopaway
 
+import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
+import android.database.sqlite.SQLiteDatabase.CONFLICT_REPLACE
 import android.database.sqlite.SQLiteOpenHelper
-import androidx.appcompat.app.AppCompatActivity
-import java.time.LocalTime
-import kotlin.coroutines.coroutineContext
 
-class DatabaseManager constructor(context: Context) : SQLiteOpenHelper(context, "database", null, 1) {
+class DatabaseManager : SQLiteOpenHelper {
+
+    companion object {
+        const val STOP_TABLE_NAME = "STOP"
+        const val TRIP_TABLE_NAME = "TRIP"
+        const val ROUTE_TABLE_NAME = "ROUTE"
+    }
+
+    constructor(context: Context) : super(context, "database", null, 1)
+    constructor() : super(null, null, null, 1)
 
 
 
 
 
     override fun onCreate(db: SQLiteDatabase?) {
-        db?.execSQL("CREATE TABLE IF NOT EXISTS STOP(stop_id, name, latitude VARCHAR(50), longitude VARCHAR(50), favorite)")
-        db?.execSQL("CREATE TABLE IF NOT EXISTS TRIP(id, head_sign)")
-        db?.execSQL("CREATE TABLE IF NOT EXISTS ROUTE(id, arrival_time, departure_time, stop_id, favorite)")
+
+        db?.execSQL("CREATE TABLE IF NOT EXISTS $STOP_TABLE_NAME(${Stop.ID_COL}, ${Stop.NUMBER_COL},${Stop.NAME_COL}," +
+                " ${Stop.LAT_COL}, ${Stop.LONG_COL}, ${Stop.FAV_COL})")
+        db?.execSQL("CREATE TABLE IF NOT EXISTS $TRIP_TABLE_NAME(${Route.TRIP_ID_COL}, ${Route.NAME})")
+        db?.execSQL("CREATE TABLE IF NOT EXISTS $ROUTE_TABLE_NAME(${Route.TRIP_ID_COL}, ${Route.ARRIVAL_TIME_COL}, " +
+                "${Route.DEP_TIME_COL}, ${Stop.ID_COL}, ${Route.FAV_COL})")
+    }
+
+    fun clearDBAndRecreate() {
+        writableDatabase.execSQL("DROP TABLE IF EXISTS $STOP_TABLE_NAME")
+        writableDatabase.execSQL("DROP TABLE IF EXISTS $ROUTE_TABLE_NAME")
+        writableDatabase.execSQL("DROP TABLE IF EXISTS $TRIP_TABLE_NAME")
+        onCreate(writableDatabase)
     }
 
     override fun onUpgrade(p0: SQLiteDatabase?, p1: Int, p2: Int) {
@@ -25,23 +43,39 @@ class DatabaseManager constructor(context: Context) : SQLiteOpenHelper(context, 
 
     //INSERT TO TABLES
 
-    fun insertStop(number: Int, nm: String, lat: String, long: String, fav: Int){
-        writableDatabase.execSQL("INSERT INTO STOP VALUES($number, \"$nm\", $lat, $long, $fav)")
+    fun insertStop(id: Int, number: Int, name: String, lat: String, long: String, fav: Int){
+        val values : ContentValues = ContentValues()
+        values.put(Stop.ID_COL, id)
+        values.put(Stop.NUMBER_COL, number)
+        values.put(Stop.NAME_COL, name)
+        values.put(Stop.LAT_COL, lat)
+        values.put(Stop.LONG_COL, long)
+        values.put(Stop.FAV_COL, fav)
+        writableDatabase.insertWithOnConflict(STOP_TABLE_NAME, null, values, CONFLICT_REPLACE)
     }
 
     fun insertTrip(id: Int, head: String){
-        writableDatabase.execSQL("INSERT INTO TRIP VALUES($id, $head)")
+        val values : ContentValues = ContentValues()
+        values.put(Route.NAME, head)
+        values.put(Route.TRIP_ID_COL, id)
+        writableDatabase.insertWithOnConflict(TRIP_TABLE_NAME, null, values, CONFLICT_REPLACE)
     }
 
     fun insertRoute(id: Int, at: String, dt: String, stop: Int, fav: Int){
-        writableDatabase.execSQL("INSERT INTO ROUTE VALUES($id, \"$at\", \"$dt\", $stop, $fav)")
+        val values : ContentValues = ContentValues()
+        values.put(Route.TRIP_ID_COL, id)
+        values.put(Route.ARRIVAL_TIME_COL, at)
+        values.put(Route.DEP_TIME_COL, dt)
+        values.put(Stop.ID_COL, stop)
+        values.put(Route.FAV_COL, fav)
+        writableDatabase.insertWithOnConflict(ROUTE_TABLE_NAME, null, values, CONFLICT_REPLACE)
     }
 
     //READ FROM TABLES
     fun readAllStops(): List<List<String>>{
         val result = mutableListOf<List<String>>()
 
-        val cursor = writableDatabase.rawQuery("SELECT * FROM STOP", null)
+        val cursor = writableDatabase.rawQuery("SELECT * FROM $STOP_TABLE_NAME", null)
         while(cursor.moveToNext()){
             val row = mutableListOf<String>()
 
@@ -60,7 +94,7 @@ class DatabaseManager constructor(context: Context) : SQLiteOpenHelper(context, 
     fun readAllTrips(): List<List<String>>{
         val result = mutableListOf<List<String>>()
 
-        val cursor = writableDatabase.rawQuery("SELECT * FROM TRIP", null)
+        val cursor = writableDatabase.rawQuery("SELECT * FROM $TRIP_TABLE_NAME", null)
         while(cursor.moveToNext()){
             val row = mutableListOf<String>()
 
@@ -76,7 +110,7 @@ class DatabaseManager constructor(context: Context) : SQLiteOpenHelper(context, 
     fun readAllRoutes(): List<List<String>>{
         val result = mutableListOf<List<String>>()
 
-        val cursor = writableDatabase.rawQuery("SELECT * FROM ROUTES", null)
+        val cursor = writableDatabase.rawQuery("SELECT * FROM $ROUTE_TABLE_NAME", null)
         while(cursor.moveToNext()){
             val row = mutableListOf<String>()
 
@@ -96,7 +130,7 @@ class DatabaseManager constructor(context: Context) : SQLiteOpenHelper(context, 
     fun getStopID(name: String): Int{
         val id: Int
 
-        val cursor = writableDatabase.rawQuery("SELECT STOP.stop_id FROM STOP WHERE STOP.name = $name", null)
+        val cursor = writableDatabase.rawQuery("SELECT STOP.${Stop.ID_COL} FROM STOP WHERE STOP.${Stop.NAME_COL} = $name", null)
 
         cursor.moveToNext()
         id = cursor.getInt(0)
