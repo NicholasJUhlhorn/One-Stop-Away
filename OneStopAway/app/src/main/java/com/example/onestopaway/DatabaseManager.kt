@@ -28,7 +28,7 @@ class DatabaseManager constructor(context: Context) : SQLiteOpenHelper(context, 
     fun insertStop(number: Int, nm: String, lat: String, long: String, fav: Int){
         writableDatabase.execSQL("INSERT INTO STOP VALUES($number, \"$nm\", $lat, $long, $fav)")
     }
-    
+
     fun insertTrip(id: Int, head: String){
         writableDatabase.execSQL("INSERT INTO TRIP VALUES($id, $head)")
     }

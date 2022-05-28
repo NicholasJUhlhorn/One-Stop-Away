@@ -14,7 +14,7 @@ import java.util.*
 
 class DatabaseManagerTest {
     private lateinit var db : DatabaseManager
-    val STOPURL = "https://api.ridewta.com/stops"
+    val STOPURL = "https://github.com/whatcomtrans/publicwtadata/blob/master/GTFS/wta_gtfs_latest/stops.txt"
     val TRIPURL = "https://github.com/whatcomtrans/publicwtadata/blob/master/GTFS/wta_gtfs_latest/trips.txt"
     val ROUTEURL = "https://raw.githubusercontent.com/whatcomtrans/publicwtadata/master/GTFS/wta_gtfs_latest/stop_times.txt"
 
