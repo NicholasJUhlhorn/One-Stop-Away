@@ -49,6 +49,13 @@ class DatabaseManagerTest {
 
     }
 
+    @Test
+    fun correctRouteID(){
+        val test = getRouteID("331 Cordata/WCC")
+
+        assertTrue(test == 1171010)
+    }
+
     fun populateStops(dbman : DatabaseManager) {
         val Surl = URL(STOPURL)
         val scn = Scanner(Surl.openStream())
@@ -95,6 +102,17 @@ class DatabaseManagerTest {
 
             dbman.insertRoute(split[0].toInt(), split[1], split[2], split[3].toInt(), 0)
         }
+    }
+
+    fun getRouteID(name: String): Int{
+        val id: Int
+
+        val cursor = db.writableDatabase.rawQuery("SELECT TRIP.id FROM TRIP WHERE TRIP.head = $name", null)
+
+        cursor.moveToNext()
+        id = cursor.getInt(0)
+
+        return id
     }
 
     @After
