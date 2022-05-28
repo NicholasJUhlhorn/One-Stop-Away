@@ -1,6 +1,9 @@
 package com.example.onestopaway
 
 import android.util.Log
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.net.URL
 import java.util.*
 
@@ -14,7 +17,15 @@ class DataRepository(private val database :DatabaseManager) {
     var numStopsFetched = 0
     var numTripsFetched = 0
 
-    fun populateStops() {
+    suspend fun populateDatabase() = withContext(Dispatchers.IO) {
+        launch {
+            populateStops()
+            populateRoutes()
+            populateTrips()
+        }
+    }
+
+    suspend fun populateStops() {
         val Surl = URL(STOPURL)
         val scn = Scanner(Surl.openStream())
 
@@ -31,7 +42,7 @@ class DataRepository(private val database :DatabaseManager) {
         }
     }
 
-    fun populateTrips() {
+    suspend fun populateTrips() {
 
         //Populates Trip Table
         val Turl = URL(TRIPURL)
@@ -50,7 +61,7 @@ class DataRepository(private val database :DatabaseManager) {
         }
     }
 
-    fun populateRoutes() {
+    suspend fun populateRoutes() {
 
         //Populates Route Table
         val Rurl = URL(ROUTEURL)
