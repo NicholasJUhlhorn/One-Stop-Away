@@ -3,6 +3,7 @@ package com.example.onestopaway
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import androidx.annotation.RequiresApi
 import org.json.JSONArray
 import org.json.JSONObject
@@ -14,8 +15,8 @@ import java.util.*
 import kotlin.concurrent.thread
 import kotlinx.coroutines.*
 
-val STOPURL = "https://github.com/whatcomtrans/publicwtadata/blob/master/GTFS/wta_gtfs_latest/stops.txt"
-val TRIPURL = "https://github.com/whatcomtrans/publicwtadata/blob/master/GTFS/wta_gtfs_latest/trips.txt"
+val STOPURL = "https://raw.githubusercontent.com/whatcomtrans/publicwtadata/master/GTFS/wta_gtfs_latest/stops.txt"
+val TRIPURL = "https://raw.githubusercontent.com/whatcomtrans/publicwtadata/master/GTFS/wta_gtfs_latest/trips.txt"
 val ROUTEURL = "https://raw.githubusercontent.com/whatcomtrans/publicwtadata/master/GTFS/wta_gtfs_latest/stop_times.txt"
 
 class MainActivity : AppCompatActivity() {

@@ -14,8 +14,8 @@ import java.util.*
 
 class DatabaseManagerTest {
     private lateinit var db : DatabaseManager
-    val STOPURL = "https://github.com/whatcomtrans/publicwtadata/blob/master/GTFS/wta_gtfs_latest/stops.txt"
-    val TRIPURL = "https://github.com/whatcomtrans/publicwtadata/blob/master/GTFS/wta_gtfs_latest/trips.txt"
+    val STOPURL = "https://raw.githubusercontent.com/whatcomtrans/publicwtadata/master/GTFS/wta_gtfs_latest/stops.txt"
+    val TRIPURL = "https://raw.githubusercontent.com/whatcomtrans/publicwtadata/master/GTFS/wta_gtfs_latest/trips.txt"
     val ROUTEURL = "https://raw.githubusercontent.com/whatcomtrans/publicwtadata/master/GTFS/wta_gtfs_latest/stop_times.txt"
 
     @Before
@@ -44,7 +44,6 @@ class DatabaseManagerTest {
     fun routesAreAdded() {
         populateRoutes(db)
 
-        val sample_route =
         assertTrue(db.readAllStops().size > 1)
 
     }
@@ -106,8 +105,9 @@ class DatabaseManagerTest {
 
     fun getRouteID(name: String): Int{
         val id: Int
+        val param = Array<String>(1){name}
 
-        val cursor = db.writableDatabase.rawQuery("SELECT TRIP.id FROM TRIP WHERE TRIP.head = $name", null)
+        val cursor = db.writableDatabase.rawQuery("SELECT TRIP.id FROM TRIP WHERE TRIP.head_sign = ?", param)
 
         cursor.moveToNext()
         id = cursor.getInt(0)
