@@ -1,16 +1,14 @@
 package com.example.onestopaway
 
 import androidx.test.platform.app.InstrumentationRegistry
-import org.json.JSONArray
-import org.json.JSONObject
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import org.junit.Assert.*
 
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
-import java.net.URL
-import java.time.LocalTime
-import java.util.*
 
 class DatabaseManagerTest {
     private lateinit var db : DatabaseManager
@@ -28,7 +26,8 @@ class DatabaseManagerTest {
     }
 
     @Test
-    fun stopsAreAdded() {
+    @ExperimentalCoroutinesApi
+    fun stopsAreAdded() = runBlocking {
         repository.populateStops()
 
         assertTrue(repository.numStopsFetched > 1)
@@ -37,7 +36,8 @@ class DatabaseManagerTest {
     }
 
     @Test
-    fun tripsAreAdded() {
+    @ExperimentalCoroutinesApi
+    fun tripsAreAdded() = runTest {
         repository.populateTrips()
 
         assertTrue(repository.numTripsFetched > 1)
@@ -46,35 +46,24 @@ class DatabaseManagerTest {
     }
 
     @Test
-    fun routesAreAdded() {
+    @ExperimentalCoroutinesApi
+    fun routesAreAdded() = runTest {
         repository.populateRoutes()
 
-        assertTrue(db.readAllStops().size > 1)
-        
         assertTrue(repository.numRoutesFetched > 1)
         assertEquals(db.readAllRoutes().size, repository.numRoutesFetched)
 
     }
 
     @Test
-    fun correctRouteID(){
-        val test = getRouteID("331 Cordata/WCC")
+    @ExperimentalCoroutinesApi
+    fun correctRouteID() = runTest {
+        repository.populateDatabase()
+        val test = db.getRouteID("331 Cordata/WCC")
 
-        assertTrue(test == 1171010)
+        assertEquals(test, 1171010)
     }
 
-
-    fun getRouteID(name: String): Int{
-        val id: Int
-        val param = Array<String>(1){name}
-
-        val cursor = db.writableDatabase.rawQuery("SELECT TRIP.id FROM TRIP WHERE TRIP.head_sign = ?", param)
-
-        cursor.moveToNext()
-        id = cursor.getInt(0)
-
-        return id
-    }
 
     @After
     fun tearDown() {
