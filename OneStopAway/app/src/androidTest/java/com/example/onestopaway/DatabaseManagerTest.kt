@@ -16,6 +16,7 @@ class DatabaseManagerTest {
     private lateinit var db : DatabaseManager
     private lateinit var repository: DataRepository
 
+
     @Before
     fun setUp() {
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
@@ -48,9 +49,31 @@ class DatabaseManagerTest {
     fun routesAreAdded() {
         repository.populateRoutes()
 
+        assertTrue(db.readAllStops().size > 1)
+        
         assertTrue(repository.numRoutesFetched > 1)
         assertEquals(db.readAllRoutes().size, repository.numRoutesFetched)
 
+    }
+
+    @Test
+    fun correctRouteID(){
+        val test = getRouteID("331 Cordata/WCC")
+
+        assertTrue(test == 1171010)
+    }
+
+
+    fun getRouteID(name: String): Int{
+        val id: Int
+        val param = Array<String>(1){name}
+
+        val cursor = db.writableDatabase.rawQuery("SELECT TRIP.id FROM TRIP WHERE TRIP.head_sign = ?", param)
+
+        cursor.moveToNext()
+        id = cursor.getInt(0)
+
+        return id
     }
 
     @After
