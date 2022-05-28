@@ -41,7 +41,7 @@ class MainActivity : AppCompatActivity() {
                 Line = scn.nextLine()
                 Split = Line.split(",")
 
-                dbman.insertStop(Split[0].toInt(), Split[2], Split[4].toDouble(), Split[5].toDouble(), 0)
+                dbman.insertStop(Split[0].toInt(), Split[2], Split[4], Split[5], 0)
             }
 
             //Populates Trip Table

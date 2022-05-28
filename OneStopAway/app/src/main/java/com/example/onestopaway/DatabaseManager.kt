@@ -14,7 +14,7 @@ class DatabaseManager constructor(context: Context) : SQLiteOpenHelper(context, 
 
 
     override fun onCreate(db: SQLiteDatabase?) {
-        db?.execSQL("CREATE TABLE IF NOT EXISTS STOP(stop_id, name, latitude, longitude, favorite)")
+        db?.execSQL("CREATE TABLE IF NOT EXISTS STOP(stop_id, name, latitude VARCHAR(50), longitude VARCHAR(50), favorite)")
         db?.execSQL("CREATE TABLE IF NOT EXISTS TRIP(id, head_sign)")
         db?.execSQL("CREATE TABLE IF NOT EXISTS ROUTE(id, arrival_time, departure_time, stop_id, favorite)")
     }
@@ -25,9 +25,10 @@ class DatabaseManager constructor(context: Context) : SQLiteOpenHelper(context, 
 
     //INSERT TO TABLES
 
-    fun insertStop(number: Int, nm: String, lat: Double, long: Double, loc: String, fav: Int){
-        writableDatabase.execSQL("INSERT INTO STOP VALUES($number, \"$nm\", $lat, $long, \"$loc\", $fav)")
+    fun insertStop(number: Int, nm: String, lat: String, long: String, fav: Int){
+        writableDatabase.execSQL("INSERT INTO STOP VALUES($number, \"$nm\", $lat, $long, $fav)")
     }
+    
     fun insertTrip(id: Int, head: String){
         writableDatabase.execSQL("INSERT INTO TRIP VALUES($id, $head)")
     }
@@ -46,9 +47,25 @@ class DatabaseManager constructor(context: Context) : SQLiteOpenHelper(context, 
 
             row.add(cursor.getInt(0).toString())
             row.add(cursor.getString(1))
-            row.add(cursor.getDouble(2).toString())
-            row.add(cursor.getDouble(3).toString())
+            row.add(cursor.getString(2))
+            row.add(cursor.getString(3))
             row.add(cursor.getInt(4).toString())
+
+            result.add(row)
+        }
+
+        return result
+    }
+
+    fun readAllTrips(): List<List<String>>{
+        val result = mutableListOf<List<String>>()
+
+        val cursor = writableDatabase.rawQuery("SELECT * FROM TRIP", null)
+        while(cursor.moveToNext()){
+            val row = mutableListOf<String>()
+
+            row.add(cursor.getInt(0).toString())
+            row.add(cursor.getString(1))
 
             result.add(row)
         }

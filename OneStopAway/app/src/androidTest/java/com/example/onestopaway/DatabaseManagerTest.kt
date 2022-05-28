@@ -34,6 +34,13 @@ class DatabaseManagerTest {
     }
 
     @Test
+    fun tripsAreAdded() {
+        populateTrips(db)
+
+        assertTrue(db.readAllTrips().size > 1)
+    }
+
+    @Test
     fun routesAreAdded() {
         populateRoutes(db)
 
@@ -42,40 +49,51 @@ class DatabaseManagerTest {
 
     }
 
-    fun populateRoutes(dbman: DatabaseManager) {
+    fun populateStops(dbman : DatabaseManager) {
+        val Surl = URL(STOPURL)
+        val scn = Scanner(Surl.openStream())
 
-        //Populates Route Table
+        var Line: String
+        var Split: List<String>
+
+        scn.nextLine()
+        while(scn.hasNextLine()){
+            Line = scn.nextLine()
+            Split = Line.split(",")
+
+            dbman.insertStop(Split[0].toInt(), Split[2], Split[4], Split[5], 0)
+        }
+    }
+
+    fun populateTrips(dbman : DatabaseManager) {
+        val Turl = URL(TRIPURL)
+        val scan = Scanner(Turl.openStream())
+
+        var ln: String
+        var spt: List<String>
+
+        scan.nextLine()
+        while(scan.hasNextLine()){
+            ln = scan.nextLine()
+            spt = ln.split(",")
+
+            dbman.insertTrip(spt[0].toInt(), spt[3])
+        }
+    }
+
+    fun populateRoutes(dbman: DatabaseManager) {
         val Rurl = URL(ROUTEURL)
         val scanner = Scanner(Rurl.openStream())
 
         var line: String
         var split: List<String>
 
-        var arrive: LocalTime
-        var departure: LocalTime
         scanner.nextLine()
         while(scanner.hasNextLine()){
             line = scanner.nextLine()
             split = line.split(",")
 
-            //Converts String into Time Format
-            //arrive = LocalTime.parse(split[1], DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT))
-            //departure = LocalTime.parse(split[2], DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT))
-
             dbman.insertRoute(split[0].toInt(), split[1], split[2], split[3].toInt(), 0)
-        }
-    }
-
-    fun populateStops(dbman : DatabaseManager) {
-        //Populates Stop Table
-        val Surl = URL(STOPURL)
-        val content = Surl.readText()
-
-        var arrayStop = JSONArray(content)
-        var obj: JSONObject
-        for(i in 0 until arrayStop.length()){
-            obj = arrayStop.getJSONObject(i)
-            dbman.insertStop(obj.getInt("stopNum"), obj.getString("name"), obj.getDouble("longitude"), obj.getDouble("latitutde"), obj.getString("locality"), 0)
         }
     }
 
