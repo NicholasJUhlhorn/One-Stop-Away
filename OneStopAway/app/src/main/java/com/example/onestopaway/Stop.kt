@@ -42,8 +42,9 @@ class Stop {
         _longitude = longitude
     }
 
+    //column names for STOP table
     companion object {
-        val NUMBER_COL = "stop_number"
+        const val NUMBER_COL = "stop_number"
         const val NAME_COL = "name"
         const val ID_COL = "stop_id"
         const val LAT_COL = "latitude"

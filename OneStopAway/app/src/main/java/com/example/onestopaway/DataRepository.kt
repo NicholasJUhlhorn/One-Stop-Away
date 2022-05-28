@@ -9,9 +9,11 @@ class DataRepository(private val database :DatabaseManager) {
     val STOPURL = "https://raw.githubusercontent.com/whatcomtrans/publicwtadata/master/GTFS/wta_gtfs_latest/stops.txt"
     val TRIPURL = "https://raw.githubusercontent.com/whatcomtrans/publicwtadata/master/GTFS/wta_gtfs_latest/trips.txt"
     val ROUTEURL = "https://raw.githubusercontent.com/whatcomtrans/publicwtadata/master/GTFS/wta_gtfs_latest/stop_times.txt"
+    // keep track of fetched data for testing
     var numRoutesFetched = 0
     var numStopsFetched = 0
     var numTripsFetched = 0
+
     fun populateStops() {
         val Surl = URL(STOPURL)
         val scn = Scanner(Surl.openStream())
@@ -24,6 +26,7 @@ class DataRepository(private val database :DatabaseManager) {
             Line = scn.nextLine()
             Split = Line.split(",")
             numStopsFetched += 1
+
             database.insertStop(Split[0].toInt(), Split[1].toInt(), Split[2], Split[4], Split[5], 0)
         }
     }
@@ -42,6 +45,7 @@ class DataRepository(private val database :DatabaseManager) {
             ln = scan.nextLine()
             spt = ln.split(",")
             numTripsFetched += 1
+
             database.insertTrip(spt[0].toInt(), spt[3])
         }
     }
