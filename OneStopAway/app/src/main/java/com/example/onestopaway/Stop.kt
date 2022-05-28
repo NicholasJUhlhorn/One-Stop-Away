@@ -42,6 +42,16 @@ class Stop {
         _longitude = longitude
     }
 
+    //column names for STOP table
+    companion object {
+        const val NUMBER_COL = "stop_number"
+        const val NAME_COL = "name"
+        const val ID_COL = "stop_id"
+        const val LAT_COL = "latitude"
+        const val LONG_COL = "longitude"
+        const val FAV_COL = "favorite"
+    }
+
     // Functions
     /**
      * Gets the Manhattan distance to this stop from the given latitude and longitude
