@@ -14,7 +14,7 @@ import com.example.onestopaway.databinding.FragmentRouteBinding
  * TODO: Replace the implementation with code for your data type.
  */
 class RouteRecyclerViewAdapter(
-    private val values: List<PlaceholderItem>
+    private val values: List<Route>
 ) : RecyclerView.Adapter<RouteRecyclerViewAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -31,15 +31,15 @@ class RouteRecyclerViewAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = values[position]
-        holder.routeNumber.text = item.content
-        //holder.numActiveBuses.text = item.numBuses
+        holder.routeNumber.text = item.id.toString()
+        holder.routeName.text = item.name
     }
 
     override fun getItemCount(): Int = values.size
 
     inner class ViewHolder(binding: FragmentRouteBinding) : RecyclerView.ViewHolder(binding.root) {
         val routeNumber: TextView = binding.routeInfo
-        val numActiveBuses: TextView = binding.activeBuses
+        val routeName: TextView = binding.activeBuses
 
         override fun toString(): String {
             return super.toString() + " '" + routeNumber.text + "'"

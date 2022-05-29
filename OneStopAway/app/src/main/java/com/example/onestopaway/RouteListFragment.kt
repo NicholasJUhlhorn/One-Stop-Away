@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.activityViewModels
 import com.example.onestopaway.placeholder.PlaceholderContent
 
 /**
@@ -16,6 +17,7 @@ import com.example.onestopaway.placeholder.PlaceholderContent
 class RouteListFragment : Fragment() {
 
     private var columnCount = 1
+    private val viewModel: TransitItemsViewModel by activityViewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,7 +40,7 @@ class RouteListFragment : Fragment() {
                     columnCount <= 1 -> LinearLayoutManager(context)
                     else -> GridLayoutManager(context, columnCount)
                 }
-                adapter = RouteRecyclerViewAdapter(PlaceholderContent.ITEMS)
+                //adapter = RouteRecyclerViewAdapter()
             }
         }
         return view

@@ -27,7 +27,7 @@ class TransitItemsViewModel(context: Context): ViewModel() {
      * @param longitude the longitude to search from
      * @param maxDistance the maximum distance a stop can be from the location in miles
      */
-    fun distanceSearch(latitude: Double, longitude: Double, maxDistance: Double){
+    fun distanceSearch(latitude: Double, longitude: Double, maxDistance: Double) {
         // Reset the stop and route list
         _stops = mutableListOf<Stop>()
         _routes = mutableListOf<Route>()
@@ -89,12 +89,14 @@ class TransitItemsViewModel(context: Context): ViewModel() {
      */
     fun makeStopFromDB(stopData: List<String>): Stop{
         val stopId =        stopData[0].toInt()
-        val stopName =      stopData[1]
-        val stopLatitude =  stopData[2].toDouble()
-        val stopLongitude = stopData[3].toDouble()
+        val stopNum =       stopData[1].toInt()
+        val stopName =      stopData[2]
+        val stopLatitude =  stopData[3].toDouble()
+        val stopLongitude = stopData[4].toDouble()
+        val stopFavorited = stopData[5].toShort()
 
         // Make Stop and return
-        return Stop(stopId, stopName, stopLatitude, stopLongitude)
+        return Stop(stopId, stopNum, stopName, stopLatitude, stopLongitude, stopFavorited)
     }
 
     /**
@@ -118,5 +120,6 @@ class TransitItemsViewModel(context: Context): ViewModel() {
         // Make route and return
         return Route(routeId, routeName, routeStops)
     }
+
 
 }

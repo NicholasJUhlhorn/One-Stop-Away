@@ -71,6 +71,27 @@ class DatabaseManagerTest {
 
     }
 
+    @Test
+    fun favoriteStops()  {
+        val testStop = Stop(113, 2456,"Test Stop", 44.44, 44.44,1 )
+        db.insertStop(testStop.id, testStop.number, testStop.name, testStop.latitude.toString(),
+                testStop.longitude.toString(), testStop.isFavorite.toInt())
+
+        val result = db.getFavoriteStops()
+
+        assertEquals(result.size, 1)
+    }
+
+    @Test
+    @ExperimentalCoroutinesApi
+    fun favoriteTrips()  = runTest{
+        repository.populateTrips()
+        db.insertTrip(44444, "334 Test/Trip",1)
+
+        val result = db.getFavoriteTrips()
+
+        assertEquals(result[0][0].toInt(), 44444)
+    }
 
     @After
     fun tearDown() {

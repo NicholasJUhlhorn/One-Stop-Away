@@ -26,9 +26,9 @@ class DatabaseManager(context: Context) : SQLiteOpenHelper(context, "database", 
 
         db?.execSQL("CREATE TABLE IF NOT EXISTS $STOP_TABLE_NAME(${Stop.ID_COL}, ${Stop.NUMBER_COL},${Stop.NAME_COL}," +
                 " ${Stop.LAT_COL}, ${Stop.LONG_COL}, ${Stop.FAV_COL})")
-        db?.execSQL("CREATE TABLE IF NOT EXISTS $TRIP_TABLE_NAME(${Route.TRIP_ID_COL}, ${Route.NAME})")
+        db?.execSQL("CREATE TABLE IF NOT EXISTS $TRIP_TABLE_NAME(${Route.TRIP_ID_COL}, ${Route.NAME_COL}, ${Route.FAV_COL})")
         db?.execSQL("CREATE TABLE IF NOT EXISTS $ROUTE_TABLE_NAME(${Route.TRIP_ID_COL}, ${Route.ARRIVAL_TIME_COL}, " +
-                "${Route.DEP_TIME_COL}, ${Stop.ID_COL}, ${Route.FAV_COL})")
+                "${Route.DEP_TIME_COL}, ${Stop.ID_COL})")
     }
 
     fun clearDBAndRecreate() {
@@ -57,22 +57,23 @@ class DatabaseManager(context: Context) : SQLiteOpenHelper(context, "database", 
 
     }
 
-    fun insertTrip(id: Int, head: String){
+    fun insertTrip(id: Int, head: String, fav: Int){
         val values = ContentValues()
-        values.put(Route.NAME, head)
+        values.put(Route.NAME_COL, head)
         values.put(Route.TRIP_ID_COL, id)
+        values.put(Route.FAV_COL, fav)
         writableDatabase.insertWithOnConflict(TRIP_TABLE_NAME, null, values, CONFLICT_REPLACE)
 
 
     }
 
-    fun insertRoute(id: Int, at: String, dt: String, stop: Int, fav: Int){
+    fun insertRoute(id: Int, at: String, dt: String, stop: Int){
         val values = ContentValues()
         values.put(Route.TRIP_ID_COL, id)
         values.put(Route.ARRIVAL_TIME_COL, at)
         values.put(Route.DEP_TIME_COL, dt)
         values.put(Stop.ID_COL, stop)
-        values.put(Route.FAV_COL, fav)
+
         writableDatabase.insertWithOnConflict(ROUTE_TABLE_NAME, null, values, CONFLICT_REPLACE)
 
     }
@@ -123,10 +124,9 @@ class DatabaseManager(context: Context) : SQLiteOpenHelper(context, "database", 
             val row = mutableListOf<String>()
 
             row.add(cursor.getInt(0).toString())
-            row.add(cursor.getString(1))
+            row.add(cursor.getInt(1).toString())
             row.add(cursor.getString(2))
-            row.add(cursor.getInt(3).toString())
-            row.add(cursor.getInt(4).toString())
+            row.add(cursor.getString(3))
 
             result.add(row)
         }
@@ -167,7 +167,7 @@ class DatabaseManager(context: Context) : SQLiteOpenHelper(context, "database", 
     fun getRouteID(name: String): Int{
         val id: Int
         val param = Array(1){name}
-        val cursor = writableDatabase.rawQuery("SELECT $TRIP_TABLE_NAME.${Route.TRIP_ID_COL} FROM $TRIP_TABLE_NAME WHERE $TRIP_TABLE_NAME.${Route.NAME} = ?", param)
+        val cursor = writableDatabase.rawQuery("SELECT $TRIP_TABLE_NAME.${Route.TRIP_ID_COL} FROM $TRIP_TABLE_NAME WHERE $TRIP_TABLE_NAME.${Route.NAME_COL} = ?", param)
 
 
         cursor.moveToNext()
@@ -187,6 +187,43 @@ class DatabaseManager(context: Context) : SQLiteOpenHelper(context, "database", 
             result.add(listOf(cursor.getString(0)))
         }
         cursor.close()
+        return result
+    }
+
+    fun getFavoriteStops() : List<List<String>> {
+        val result = mutableListOf<List<String>>()
+        val cursor = writableDatabase.rawQuery("SELECT * FROM $STOP_TABLE_NAME WHERE ${Stop.FAV_COL} = 1", null)
+        while(cursor.moveToNext()){
+            val row = mutableListOf<String>()
+
+            row.add(cursor.getInt(0).toString())
+            row.add(cursor.getString(1))
+            row.add(cursor.getString(2))
+            row.add(cursor.getString(3))
+            row.add(cursor.getInt(4).toString())
+
+            result.add(row)
+        }
+        cursor.close()
+        return result
+    }
+
+    fun getFavoriteTrips(): List<List<String>> {
+        val result = mutableListOf<List<String>>()
+
+
+        val cursor = writableDatabase.rawQuery("SELECT * FROM $TRIP_TABLE_NAME WHERE $TRIP_TABLE_NAME.${Route.FAV_COL} = 1", null)
+        while(cursor.moveToNext()){
+            val row = mutableListOf<String>()
+
+            row.add(cursor.getInt(0).toString())
+            row.add(cursor.getInt(1).toString())
+            row.add(cursor.getInt(2).toString())
+
+            result.add(row)
+        }
+        cursor.close()
+
         return result
     }
 }

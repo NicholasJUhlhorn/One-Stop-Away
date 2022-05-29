@@ -57,7 +57,7 @@ class DataRepository(private val database :DatabaseManager) {
             spt = ln.split(",")
             numTripsFetched += 1
 
-            database.insertTrip(spt[0].toInt(), spt[3])
+            database.insertTrip(spt[0].toInt(), spt[3], 0)
         }
     }
 
@@ -76,7 +76,7 @@ class DataRepository(private val database :DatabaseManager) {
             split = line.split(",")
             numRoutesFetched += 1
 
-            database.insertRoute(split[0].toInt(), split[1], split[2], split[3].toInt(), 0)
+            database.insertRoute(split[0].toInt(), split[1], split[2], split[3].toInt())
         }
     }
 
