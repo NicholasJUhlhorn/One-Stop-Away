@@ -17,7 +17,7 @@ class Route {
     // Variables
     private var _name = "Default Name"
     private var _id: Int = 0
-    private lateinit var _stops: List<Stop>
+    private var _stops: List<Stop>
 
     // Getters and (Setters)
     val name
@@ -31,7 +31,15 @@ class Route {
     constructor(id: Int, name: String, stops: List<Stop>){
         _id = id
         _name = name
+
         _stops = stops
     }
-
+    //Column names for ROUTE table
+    companion object {
+        const val NAME = "head_sign"
+        const val TRIP_ID_COL = "trip_id"
+        const val ARRIVAL_TIME_COL = "arrival_time"
+        const val DEP_TIME_COL = "departure_time"
+        const val FAV_COL = "favorite"
+    }
 }

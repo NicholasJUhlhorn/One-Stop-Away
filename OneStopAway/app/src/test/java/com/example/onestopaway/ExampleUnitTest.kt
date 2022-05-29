@@ -1,5 +1,6 @@
 package com.example.onestopaway
 
+import androidx.test.core.app.ApplicationProvider
 import org.junit.Test
 
 import org.junit.Assert.*
