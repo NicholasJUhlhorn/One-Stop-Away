@@ -6,12 +6,12 @@ package com.example.onestopaway
 import android.content.Context
 import androidx.lifecycle.ViewModel
 
-class TransitItemsViewModel(context: Context, val repository: DataRepository): ViewModel() {
+class TransitItemsViewModel(context: Context): ViewModel() {
 
-    var _stops = mutableListOf<Stop>()
-    var _routes = mutableListOf<Route>()
+    private var _stops = mutableListOf<Stop>()
+    private var _routes = mutableListOf<Route>()
 
-   val _databaseManager = DatabaseManager.getDatabase(context)
+   private val _databaseManager = DatabaseManager.getDatabase(context)
 
     /**
      * Populates _stops and _routes based on the given keyword

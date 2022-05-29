@@ -18,16 +18,14 @@ class DatabaseManagerTest {
     @Before
     fun setUp() {
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-        db = DatabaseManager(appContext)
+        db = DatabaseManager.getDatabase(appContext)
         db.clearDBAndRecreate()
         repository = DataRepository(db)
-
-
     }
 
     @Test
     @ExperimentalCoroutinesApi
-    fun stopsAreAdded() = runBlocking {
+    fun     stopsAreAdded() = runBlocking {
         repository.populateStops()
 
         assertTrue(repository.numStopsFetched > 1)
@@ -62,6 +60,15 @@ class DatabaseManagerTest {
         val test = db.getRouteID("331 Cordata/WCC")
 
         assertEquals(test, 1171010)
+    }
+
+    @Test
+    @ExperimentalCoroutinesApi
+    fun correctStopID() = runTest {
+        repository.populateDatabase()
+        val stopID = db.getStopID("Woburn St at North St")
+        assertEquals(stopID, 64)
+
     }
 
 

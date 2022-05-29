@@ -1,6 +1,5 @@
 package com.example.onestopaway
 
-import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -15,8 +14,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         _binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        //add the initial route list fragment
         val route = RouteListFragment()
-        val dbman = DatabaseManager(this)
         supportFragmentManager.beginTransaction().apply {
             replace(R.id.main_page_container, route)
             commit()
@@ -28,14 +27,15 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+    // clicklistener for the bottom menu
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         // Handle item selection
         return when (item.itemId) {
             R.id.routes -> {
-                    val routeFrag = supportFragmentManager.findFragmentById(R.id.main_page_container)
-                    if(routeFrag is RouteListFragment) {
+                    val frag = supportFragmentManager.findFragmentById(R.id.main_page_container)
+                    if(frag is RouteListFragment) {
                         supportFragmentManager.beginTransaction().apply {
-                            replace(R.id.main_page_container, routeFrag)
+                            replace(R.id.main_page_container, frag)
                             commit()
                         }
                     } else {
@@ -49,19 +49,35 @@ class MainActivity : AppCompatActivity() {
                 true
             }
             R.id.favorites -> {
-                supportFragmentManager.beginTransaction().apply {
-                    val favoritesFragment = FavoritesFragment()
-                    replace(R.id.main_page_container, favoritesFragment)
-                    commit()
+                val frag = supportFragmentManager.findFragmentById(R.id.main_page_container)
+                if(frag is FavoritesFragment) {
+                    supportFragmentManager.beginTransaction().apply {
+                        replace(R.id.main_page_container, frag)
+                        commit()
+                    }
+                } else {
+                    val newFrag = FavoritesFragment()
+                    supportFragmentManager.beginTransaction().apply {
+                        replace(R.id.main_page_container, newFrag)
+                        commit()
+                    }
                 }
                 Log.d("BUTTONLOG", "clicked favorites tab")
                 true
             }
             R.id.stops -> {
-                supportFragmentManager.beginTransaction().apply {
-                    val routeFrag = RouteListFragment()
-                    replace(R.id.main_page_container, routeFrag)
-                    commit()
+                val frag = supportFragmentManager.findFragmentById(R.id.main_page_container)
+                if(frag is StopsListFragment) {
+                    supportFragmentManager.beginTransaction().apply {
+                        replace(R.id.main_page_container, frag)
+                        commit()
+                    }
+                } else {
+                    val newFrag = StopsListFragment()
+                    supportFragmentManager.beginTransaction().apply {
+                        replace(R.id.main_page_container, newFrag)
+                        commit()
+                    }
                 }
                 Log.d("BUTTONLOG", "clicked stop tab")
                 true

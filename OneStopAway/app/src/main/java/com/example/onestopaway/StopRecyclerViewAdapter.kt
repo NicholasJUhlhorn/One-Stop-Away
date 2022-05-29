@@ -39,7 +39,6 @@ class StopRecyclerViewAdapter(
     inner class ViewHolder(binding: FragmentStopsBinding) : RecyclerView.ViewHolder(binding.root) {
         val nameView: TextView = binding.stopName
         val numberView: TextView = binding.stopNumber
-        val localityView : TextView = binding.stopLocality
 
         override fun toString(): String {
             return super.toString() + " '" + nameView.text + "'"
