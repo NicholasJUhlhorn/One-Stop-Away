@@ -8,12 +8,19 @@ import android.database.sqlite.SQLiteOpenHelper
 
 class DatabaseManager(context: Context) : SQLiteOpenHelper(context, "database", null, 1) {
 
+
     companion object {
         const val STOP_TABLE_NAME = "STOP"
         const val TRIP_TABLE_NAME = "TRIP"
         const val ROUTE_TABLE_NAME = "ROUTE"
-    }
 
+        //singleton for the database manager
+        private var INSTANCE : DatabaseManager? = null
+
+        fun getDatabase(context: Context): DatabaseManager {
+            return INSTANCE ?: DatabaseManager(context)
+        }
+    }
 
     override fun onCreate(db: SQLiteDatabase?) {
 
@@ -29,6 +36,7 @@ class DatabaseManager(context: Context) : SQLiteOpenHelper(context, "database", 
         writableDatabase.execSQL("DROP TABLE IF EXISTS $ROUTE_TABLE_NAME")
         writableDatabase.execSQL("DROP TABLE IF EXISTS $TRIP_TABLE_NAME")
         onCreate(writableDatabase)
+        writableDatabase.close()
     }
 
     override fun onUpgrade(p0: SQLiteDatabase?, p1: Int, p2: Int) {
@@ -46,6 +54,7 @@ class DatabaseManager(context: Context) : SQLiteOpenHelper(context, "database", 
         values.put(Stop.LONG_COL, long)
         values.put(Stop.FAV_COL, fav)
         writableDatabase.insertWithOnConflict(STOP_TABLE_NAME, null, values, CONFLICT_REPLACE)
+
     }
 
     fun insertTrip(id: Int, head: String){
@@ -53,6 +62,7 @@ class DatabaseManager(context: Context) : SQLiteOpenHelper(context, "database", 
         values.put(Route.NAME, head)
         values.put(Route.TRIP_ID_COL, id)
         writableDatabase.insertWithOnConflict(TRIP_TABLE_NAME, null, values, CONFLICT_REPLACE)
+
 
     }
 
@@ -64,6 +74,7 @@ class DatabaseManager(context: Context) : SQLiteOpenHelper(context, "database", 
         values.put(Stop.ID_COL, stop)
         values.put(Route.FAV_COL, fav)
         writableDatabase.insertWithOnConflict(ROUTE_TABLE_NAME, null, values, CONFLICT_REPLACE)
+
     }
 
     //READ FROM TABLES
@@ -120,6 +131,7 @@ class DatabaseManager(context: Context) : SQLiteOpenHelper(context, "database", 
             result.add(row)
         }
         cursor.close()
+
         return result
     }
 
