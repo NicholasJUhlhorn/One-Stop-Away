@@ -63,15 +63,6 @@ class DatabaseManagerTest {
     }
 
     @Test
-    @ExperimentalCoroutinesApi
-    fun correctStopID() = runTest {
-        repository.populateDatabase()
-        val stopID = db.getStopID("Woburn St at North St")
-        assertEquals(stopID, 64)
-
-    }
-
-    @Test
     fun favoriteStops()  {
         val testStop = Stop(113, 2456,"Test Stop", 44.44, 44.44,1 )
         db.insertStop(testStop.id, testStop.number, testStop.name, testStop.latitude.toString(),
@@ -80,6 +71,22 @@ class DatabaseManagerTest {
         val result = db.getFavoriteStops()
 
         assertEquals(result.size, 1)
+    }
+    fun correctStop() = runTest {
+        repository.populateStops()
+        val test = db.getStopID("Bakerview Rd at Fred Meyer")
+
+        assertEquals(test, 4)
+    }
+
+    @Test
+    @ExperimentalCoroutinesApi
+    fun correctTimes() = runTest {
+        repository.populateStops()
+        repository.populateRoutes()
+        val test = db.getArrivalTimeOnStop(2070)
+
+        assertEquals(test[0][0], "07:43:28")
     }
 
     @Test
@@ -92,6 +99,7 @@ class DatabaseManagerTest {
 
         assertEquals(result[0][0].toInt(), 44444)
     }
+
 
     @After
     fun tearDown() {

@@ -147,13 +147,13 @@ class DatabaseManager(context: Context) : SQLiteOpenHelper(context, "database", 
         return id
     }
 
-    //Gets arrival times based on stop number
-    fun getArrivalTimeOnStop(stop_number: Int): List<String>{
+    //Gets arrival times based on stop id
+    fun getArrivalTimeOnStop(stop_id: Int): List<String>{
         val result = mutableListOf<String>()
-        val param = Array<String>(1){stop_number.toString()}
+        val param = Array<String>(1){stop_id.toString()}
 
 
-        val cursor = writableDatabase.rawQuery("SELECT $ROUTE_TABLE_NAME.arrival_time FROM $STOP_TABLE_NAME INNER JOIN $ROUTE_TABLE_NAME ON $STOP_TABLE_NAME.stop_id = $ROUTE_TABLE_NAME.stop_id WHERE $STOP_TABLE_NAME.${Stop.NUMBER_COL} = ?",
+        val cursor = writableDatabase.rawQuery("SELECT $ROUTE_TABLE_NAME.arrival_time FROM $STOP_TABLE_NAME INNER JOIN $ROUTE_TABLE_NAME ON $STOP_TABLE_NAME.id = $ROUTE_TABLE_NAME.stop_id WHERE $STOP_TABLE_NAME.${Stop.ID_COL} = ?",
             param)
 
         while(cursor.moveToNext()){
@@ -180,7 +180,7 @@ class DatabaseManager(context: Context) : SQLiteOpenHelper(context, "database", 
     fun getStopsOnRoute(id: Int): List<List<String>>{
         val result = mutableListOf<List<String>>()
         val param = Array<String>(1){id.toString()}
-        val cursor = writableDatabase.rawQuery( "SELECT STOP.name FROM STOP INNER JOIN ROUTE ON STOP.stop_id = ROUTE.stop_id WHERE ROUTE.stop_id = ?",
+        val cursor = writableDatabase.rawQuery( "SELECT STOP.name FROM STOP INNER JOIN ROUTE ON STOP.id = ROUTE.stop_id WHERE ROUTE.stop_id = ?",
             param)
 
         while(cursor.moveToNext()){
