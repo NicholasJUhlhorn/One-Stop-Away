@@ -11,7 +11,14 @@ class TransitItemsViewModel(context: Context): ViewModel() {
     private var _stops = mutableListOf<Stop>()
     private var _routes = mutableListOf<Route>()
 
-   private val _databaseManager = DatabaseManager.getDatabase(context)
+    private val _databaseManager = DatabaseManager.getDatabase(context)
+
+    // Getters and Setters
+    val stops
+        get() = _stops
+
+    val routes
+        get() = _routes
 
     /**
      * Populates _stops and _routes based on the given keyword
@@ -19,6 +26,25 @@ class TransitItemsViewModel(context: Context): ViewModel() {
      */
     fun keywordSearch(keyword: String){
         // TODO: Implement this function
+    }
+
+    /**
+     * Populates _stops and _routes with all routes and stops
+     */
+    fun getAll(){
+        // Reset the stop and route list
+        _stops = mutableListOf<Stop>()
+        _routes = mutableListOf<Route>()
+
+        // Get all stops and routes from the database
+        val stopStrings = _databaseManager.readAllStops()
+        val routeStrings = _databaseManager.readAllRoutes()
+
+        // convert and add each stop to _stops
+        stopStrings.forEach {
+            // Make stop from row
+            _stops.add(makeStopFromDB(it))
+        }
     }
 
     /**

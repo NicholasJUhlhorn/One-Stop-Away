@@ -1,6 +1,8 @@
 package com.example.onestopaway
 
+import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -31,6 +33,8 @@ class StopsListFragment : Fragment() {
     ): View? {
         val view = inflater.inflate(R.layout.fragment_stops_list, container, false)
 
+        // TODO: Load model if it exists
+
         // Set the adapter
         if (view is RecyclerView) {
             with(view) {
@@ -38,10 +42,19 @@ class StopsListFragment : Fragment() {
                     columnCount <= 1 -> LinearLayoutManager(context)
                     else -> GridLayoutManager(context, columnCount)
                 }
-                adapter = StopRecyclerViewAdapter(PlaceholderContent.ITEMS)
+
+                val viewModel = TransitItemsViewModel(context)
+                viewModel.getAll()
+                Log.d("OneStopAway", "Size of list: ${viewModel.stops.size}")
+                adapter = StopRecyclerViewAdapter(viewModel.stops)
             }
         }
         return view
+    }
+
+    override fun onAttach(context: Context) {
+        // TODO: Save model
+        super.onAttach(context)
     }
 
     companion object {

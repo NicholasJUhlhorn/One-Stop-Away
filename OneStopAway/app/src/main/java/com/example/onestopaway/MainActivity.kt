@@ -6,12 +6,17 @@ import android.util.Log
 import android.view.MenuItem
 import androidx.activity.viewModels
 import com.example.onestopaway.databinding.ActivityMainBinding
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
 
     private var _binding : ActivityMainBinding? = null
+    private val db : DatabaseManager = DatabaseManager(this)
+    private val dataRepo : DataRepository = DataRepository(db)
     private val viewModel : TransitItemsViewModel by viewModels()
     private val binding get() = _binding!!
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         _binding = ActivityMainBinding.inflate(layoutInflater)
@@ -25,6 +30,12 @@ class MainActivity : AppCompatActivity() {
         binding.menuBar.setOnItemSelectedListener {
             onOptionsItemSelected(it)
         }
+
+        db.clearDBAndRecreate()
+
+         GlobalScope.launch {
+             dataRepo.populateDatabase()
+         }
 
 
     }
