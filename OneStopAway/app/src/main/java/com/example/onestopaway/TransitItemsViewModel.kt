@@ -51,6 +51,15 @@ class TransitItemsViewModel(context: Context): ViewModel() {
     }
 
     /**
+     * A Helper function that tells all stops to update their next arrival times
+     */
+    fun updateStopArrivalTimes(){
+        _stops.forEach {
+            it.updateTimeUntilNextBus(_databaseManager)
+        }
+    }
+
+    /**
      * Populates _stops and _routes based on given location
      * @param latitude the latitude to search from
      * @param longitude the longitude to search from

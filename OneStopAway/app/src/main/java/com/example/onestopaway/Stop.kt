@@ -3,6 +3,9 @@
 // CSCI 412
 package com.example.onestopaway
 
+import android.provider.ContactsContract
+import android.util.Log
+import java.time.LocalTime
 import kotlin.math.abs
 import kotlin.math.ceil
 
@@ -27,6 +30,7 @@ class Stop {
     private var _latitude: Double = 0.0
     private var _longitude: Double = 0.0
     private var _isFavorite: Short = 0
+    private var _minutesToNextBus: Int = 0
 
     // Getters and (Setters)
     val name
@@ -38,7 +42,10 @@ class Stop {
         get() = _latitude
     val longitude
         get() = _longitude
-    val isFavorite get() = _isFavorite
+    val isFavorite
+        get() = _isFavorite
+    val minutesToNextBus
+        get() = _minutesToNextBus
 
     // Constructor
     constructor(id: Int, number: Int, name: String, latitude: Double, longitude: Double, isFavorite: Short){
@@ -114,9 +121,24 @@ class Stop {
      * Gets the estimated time until the next bus arrives based on scheduled time
      * @return the estimated time until the next bus arrives at the stop in minutes
      */
-    fun getTimeUntilNextBus(): Int {
-        // TODO: Implement this
-        return 0
+    fun updateTimeUntilNextBus(database: DatabaseManager){
+        val currentHour = LocalTime.now().hour.toString()
+
+        val routesData = database.getClosestArrivalTimesByStop(_id, currentHour)
+        val routes = mutableListOf<Route>()
+
+        Log.d("OneStopAway", "${routesData.size}")
+
+        routesData.forEach {
+            routes.add(Route(it))
+        }
+
+        routes.sortedBy { it.arrival }
+        if(routes.size > 0) {
+            _minutesToNextBus = routes[0].arrival.minute - LocalTime.now().minute
+        }else{
+            _minutesToNextBus = -1
+        }
     }
 
     /**

@@ -5,6 +5,7 @@ import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteDatabase.CONFLICT_REPLACE
 import android.database.sqlite.SQLiteOpenHelper
+import android.util.Log
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.internal.synchronized
 
@@ -239,9 +240,11 @@ class DatabaseManager(context: Context) : SQLiteOpenHelper(context, "database", 
 
     fun getClosestArrivalTimesByStop(id: Int, hour: String): List<List<String>> {
         val result = mutableListOf<List<String>>()
-        val params = arrayOf(id.toString(), hour + "\":%\"")
+        val params = arrayOf(id.toString(), "\'" + hour + ":%\'")
 
-        val cursor = writableDatabase.rawQuery("SELECT * FROM $ROUTE_TABLE_NAME WHERE ${Stop.ID_COL} == ? AND ${Route.ARRIVAL_TIME_COL} LIKE ?", params)
+        Log.d("OneStopAway", "${params[0]}, ${params[1]}")
+
+        val cursor = writableDatabase.rawQuery("SELECT * FROM $ROUTE_TABLE_NAME WHERE ${Stop.ID_COL} = ? AND ${Route.ARRIVAL_TIME_COL} LIKE ?", params)
 
         while(cursor.moveToNext()){
             val row = mutableListOf<String>()
