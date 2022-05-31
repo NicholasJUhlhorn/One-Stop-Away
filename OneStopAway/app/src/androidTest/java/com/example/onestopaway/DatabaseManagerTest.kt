@@ -18,16 +18,14 @@ class DatabaseManagerTest {
     @Before
     fun setUp() {
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-        db = DatabaseManager(appContext)
+        db = DatabaseManager.getDatabase(appContext)
         db.clearDBAndRecreate()
         repository = DataRepository(db)
-
-
     }
 
     @Test
     @ExperimentalCoroutinesApi
-    fun stopsAreAdded() = runBlocking {
+    fun     stopsAreAdded() = runBlocking {
         repository.populateStops()
 
         assertTrue(repository.numStopsFetched > 1)
@@ -65,7 +63,15 @@ class DatabaseManagerTest {
     }
 
     @Test
-    @ExperimentalCoroutinesApi
+    fun favoriteStops()  {
+        val testStop = Stop(113, 2456,"Test Stop", 44.44, 44.44,1 )
+        db.insertStop(testStop.id, testStop.number, testStop.name, testStop.latitude.toString(),
+                testStop.longitude.toString(), testStop.isFavorite.toInt())
+
+        val result = db.getFavoriteStops()
+
+        assertEquals(result.size, 1)
+    }
     fun correctStop() = runTest {
         repository.populateStops()
         val test = db.getStopID("Bakerview Rd at Fred Meyer")
@@ -85,12 +91,13 @@ class DatabaseManagerTest {
 
     @Test
     @ExperimentalCoroutinesApi
-    fun correctStops() = runTest {
-        repository.populateStops()
-        repository.populateRoutes()
-        val test = db.getStopsOnRoute(1070)
+    fun favoriteTrips()  = runTest{
+        repository.populateTrips()
+        db.insertTrip(44444, "334 Test/Trip",1)
 
-        assertEquals(test[0][0], "Peace Portal Dr at 4th St")
+        val result = db.getFavoriteTrips()
+
+        assertEquals(result[0][0].toInt(), 44444)
     }
 
 

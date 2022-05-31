@@ -9,10 +9,12 @@ import kotlin.math.ceil
 /**
  * A class that contains the data for a Stop
  * @param name The name of the stop
- * @param id The id of the stop
+ * @param id The database primary key from the GTFS data
+ * @param number The stop number
  * @param latitude The latitude where the stop is located
  * @param longitude The longitude where the stop is located
- * @constructor Creates a stop based on the given id, name, latitude, and longitude
+ * @param isFavorite 1 if the stop is favorited 0 otherwise
+ * @constructor Creates a stop based on the given id, number, name, latitude, and longitude
  */
 class Stop {
     // Constants
@@ -21,25 +23,31 @@ class Stop {
     // Variables
     private var _name: String = "Default Name"
     private var _id: Int = 0
+    private var _number: Int = 0
     private var _latitude: Double = 0.0
     private var _longitude: Double = 0.0
+    private var _isFavorite: Short = 0
 
     // Getters and (Setters)
     val name
         get() = _name
     val id
         get() = _id
+    val number get() = _number
     val latitude
         get() = _latitude
     val longitude
         get() = _longitude
+    val isFavorite get() = _isFavorite
 
     // Constructor
-    constructor(id: Int, name: String, latitude: Double, longitude: Double){
+    constructor(id: Int, number: Int, name: String, latitude: Double, longitude: Double, isFavorite: Short){
         _id = id
         _name = name
         _latitude = latitude
-        _longitude = longitude
+        _number = number
+        _isFavorite = isFavorite
+        _longitude = latitude
     }
 
     //column names for STOP table
@@ -73,7 +81,7 @@ class Stop {
         val buses = listOf<Bus>(
             Bus(
                 0, "Dummy Bus", 10.0, 0.0, 0.0,
-                Stop(0, "Dummy Stop", 0.0, 0.0)
+                Stop(0, 1,"Dummy Stop", 0.0, 0.0, 0 )
             )
         )
 
