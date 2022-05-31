@@ -45,9 +45,9 @@ class Stop {
         _id = id
         _name = name
         _latitude = latitude
+        _longitude = longitude
         _number = number
         _isFavorite = isFavorite
-        _longitude = latitude
     }
 
     //column names for STOP table
