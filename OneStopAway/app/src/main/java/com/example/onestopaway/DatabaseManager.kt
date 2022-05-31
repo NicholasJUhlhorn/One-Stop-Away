@@ -210,6 +210,7 @@ class DatabaseManager(context: Context) : SQLiteOpenHelper(context, "database", 
             row.add(cursor.getString(2))
             row.add(cursor.getString(3))
             row.add(cursor.getInt(4).toString())
+            row.add(cursor.getString(5))
 
             result.add(row)
         }

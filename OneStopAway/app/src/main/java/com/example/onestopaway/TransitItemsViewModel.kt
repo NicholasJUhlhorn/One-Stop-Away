@@ -31,7 +31,7 @@ class TransitItemsViewModel(context: Context): ViewModel() {
     /**
      * Populates _stops and _routes with all routes and stops
      */
-    fun getAll(){
+    fun populateAll(){
         // Reset the stop and route list
         _stops = mutableListOf<Stop>()
         _routes = mutableListOf<Route>()
@@ -68,7 +68,7 @@ class TransitItemsViewModel(context: Context): ViewModel() {
             val newStop = makeStopFromDB(it)
 
             // If the stop is in range add it to the list
-            if(newStop.getDistance(longitude, latitude) <= maxDistance){
+            if(newStop.getDistance(latitude, longitude) <= maxDistance){
                 _stops.add(newStop)
             }
         }
@@ -96,6 +96,30 @@ class TransitItemsViewModel(context: Context): ViewModel() {
             }
         }
 
+    }
+
+    /**
+     * Populates _stops and _routes based on the stops and routes that are favorites
+     */
+    fun populateFavorites(){
+        // Reset the stop and route list
+        _stops = mutableListOf<Stop>()
+        _routes = mutableListOf<Route>()
+
+        // Get all stops and routes from the database
+        val stopStrings = _databaseManager.getFavoriteStops()
+        val routeStrings = _databaseManager.getFavoriteTrips()
+
+        // convert and add each stop to _stops
+        stopStrings.forEach {
+            // Make stop from row
+            _stops.add(makeStopFromDB(it))
+        }
+
+        routeStrings.forEach {
+            // Make new route from row
+            _routes.add(makeRouteFromDB(it))
+        }
     }
 
     /**

@@ -44,7 +44,7 @@ class StopsListFragment : Fragment() {
                 }
 
                 val viewModel = TransitItemsViewModel(context)
-                viewModel.getAll()
+                viewModel.populateAll()
                 Log.d("OneStopAway", "Size of list: ${viewModel.stops.size}")
                 adapter = StopRecyclerViewAdapter(viewModel.stops)
             }
