@@ -27,7 +27,7 @@ class TransitItemsViewModelTest {
 
         val transitItemsViewModel = TransitItemsViewModel(mockContext)
         val demoStop = transitItemsViewModel.makeStopFromDB(stopData[0])
-        val demoStopManual = Stop(0, "Demo Stop", 47.8083, -122.2526)
+        val demoStopManual = Stop(0, 0, "Demo Stop", 47.8083, -122.2526, 0)
 
         return assertTrue(demoStop.compareStop(demoStopManual))
     }
@@ -38,7 +38,7 @@ class TransitItemsViewModelTest {
 
         val transitItemsViewModel = TransitItemsViewModel(mockContext)
 
-        val demoRoute = transitItemsViewModel.makeRouteFromDB(routeData)
+        val demoRoute = transitItemsViewModel.makeTripFromDB(routeData)
         return assertEquals(demoRoute.name, "Test Route")
     }
 
@@ -48,7 +48,7 @@ class TransitItemsViewModelTest {
         mockContext = mock(Context::class.java)
 
         val transitItemsViewModel = TransitItemsViewModel(mockContext)
-        val whatcomFalls = Stop(1, "Whatcom Falls Park", 48.7505, -122.4268)
+        val whatcomFalls = Stop(1, 1, "Whatcom Falls Park", 48.7505, -122.4268, 0)
 
         return assertEquals(1, 2)
     }
