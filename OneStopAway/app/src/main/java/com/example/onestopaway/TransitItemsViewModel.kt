@@ -6,6 +6,8 @@ package com.example.onestopaway
 import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.launch
 import java.time.LocalTime
 
 class TransitItemsViewModel(context: Context): ViewModel() {
@@ -62,7 +64,7 @@ class TransitItemsViewModel(context: Context): ViewModel() {
     /**
      * A Helper function that tells all stops to update their next arrival times
      */
-    fun updateStopArrivalTimes(){
+    fun updateStopArrivalTimes() = viewModelScope.launch{
         _stops.forEach {
             it.updateTimeUntilNextBus(_databaseManager)
         }
