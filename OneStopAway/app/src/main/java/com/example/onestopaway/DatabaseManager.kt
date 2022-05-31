@@ -163,7 +163,6 @@ class DatabaseManager(context: Context) : SQLiteOpenHelper(context, "database", 
         val result = mutableListOf<String>()
         val param = Array<String>(1){stop_id.toString()}
 
-
         val cursor = writableDatabase.rawQuery("SELECT $ROUTE_TABLE_NAME.arrival_time FROM $STOP_TABLE_NAME INNER JOIN $ROUTE_TABLE_NAME ON $STOP_TABLE_NAME.id = $ROUTE_TABLE_NAME.stop_id WHERE $STOP_TABLE_NAME.${Stop.ID_COL} = ?",
             param)
 
@@ -191,7 +190,7 @@ class DatabaseManager(context: Context) : SQLiteOpenHelper(context, "database", 
     fun getStopsOnRoute(id: Int): List<List<String>>{
         val result = mutableListOf<List<String>>()
         val param = Array<String>(1){id.toString()}
-        val cursor = writableDatabase.rawQuery( "SELECT STOP.name FROM STOP INNER JOIN ROUTE ON STOP.STOP_ID = ROUTE.stop_id WHERE ROUTE.stop_id = ?",
+        val cursor = writableDatabase.rawQuery( "SELECT STOP.name FROM STOP INNER JOIN ROUTE ON STOP.stop_id = ROUTE.stop_id WHERE ROUTE.stop_id = ?",
             param)
 
         while(cursor.moveToNext()){
@@ -240,11 +239,8 @@ class DatabaseManager(context: Context) : SQLiteOpenHelper(context, "database", 
 
     fun getClosestArrivalTimesByStop(id: Int, hour: String): List<List<String>> {
         val result = mutableListOf<List<String>>()
-        val params = arrayOf(id.toString(), "\'" + hour + ":%\'")
-
-        Log.d("OneStopAway", "${params[0]}, ${params[1]}")
-
-        val cursor = writableDatabase.rawQuery("SELECT * FROM $ROUTE_TABLE_NAME WHERE ${Stop.ID_COL} = ? AND ${Route.ARRIVAL_TIME_COL} LIKE ?", params)
+        val hourwildcard = "$hour:%"
+        val cursor = writableDatabase.rawQuery("SELECT * FROM $ROUTE_TABLE_NAME WHERE ${Stop.ID_COL} = $id AND ${Route.ARRIVAL_TIME_COL} LIKE '$hourwildcard'", null)
 
         while(cursor.moveToNext()){
             val row = mutableListOf<String>()

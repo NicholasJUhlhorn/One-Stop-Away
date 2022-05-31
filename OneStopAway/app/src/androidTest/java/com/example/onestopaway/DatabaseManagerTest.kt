@@ -26,7 +26,7 @@ class DatabaseManagerTest {
 
     @Test
     @ExperimentalCoroutinesApi
-    fun     stopsAreAdded() = runBlocking {
+    fun  stopsAreAdded() = runBlocking {
         repository.populateStops()
 
         assertTrue(repository.numStopsFetched > 1)
@@ -73,6 +73,7 @@ class DatabaseManagerTest {
 
         assertEquals(result.size, 1)
     }
+    @ExperimentalCoroutinesApi
     fun correctStop() = runTest {
         repository.populateStops()
         val test = db.getStopID("Bakerview Rd at Fred Meyer")
@@ -107,7 +108,9 @@ class DatabaseManagerTest {
         repository.populateDatabase()
         val result = db.getClosestArrivalTimesByStop(1, "18")
 
-        Log.d("Testing", "${result.size}")
+        Log.d("Testing", result.toString())
+        assertTrue(result.isNotEmpty())
+
     }
 
 
