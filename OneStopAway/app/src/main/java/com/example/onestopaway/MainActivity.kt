@@ -60,7 +60,7 @@ class MainActivity : AppCompatActivity() {
                         }
                     } else {
                         // Populate nearest stops
-                        viewModel.distanceSearch(48.732738179977346, -122.4850819708947, 50.0)
+                        viewModel.distanceSearch(48.73280011832849, -122.48508132534693, 1.0)
                         val newFrag = RouteListFragment.newInstance(viewModel)
                         supportFragmentManager.beginTransaction().apply {
                             replace(R.id.main_page_container, newFrag)
@@ -98,7 +98,7 @@ class MainActivity : AppCompatActivity() {
                     }
                 } else {
                     // Populate nearest stops
-                    viewModel.distanceSearch(48.732738179977346, -122.4850819708947, 50.0)
+                    viewModel.distanceSearch(48.73280011832849, -122.48508132534693, 1.0)
                     val newFrag = StopsListFragment.newInstance(viewModel)
                     supportFragmentManager.beginTransaction().apply {
                         replace(R.id.main_page_container, newFrag)

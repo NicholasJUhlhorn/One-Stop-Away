@@ -8,6 +8,8 @@ import android.util.Log
 import java.time.LocalTime
 import kotlin.math.abs
 import kotlin.math.ceil
+import kotlin.math.pow
+import kotlin.math.sqrt
 
 /**
  * A class that contains the data for a Stop
@@ -21,7 +23,7 @@ import kotlin.math.ceil
  */
 class Stop {
     // Constants
-    val DEGREES_TO_MILES = 69 // Nice
+    val DEGREES_TO_MILES = 69.0 // Nice
 
     // Variables
     private var _name: String = "Default Name"
@@ -68,6 +70,7 @@ class Stop {
         _name       = stopData[2]
         _latitude   = stopData[3].toDouble()
         _longitude  = stopData[4].toDouble()
+        Log.d("WTF", "$_longitude")
         _isFavorite = stopData[5].toShort()
     }
 
@@ -89,7 +92,8 @@ class Stop {
      * @return the Manhattan distance from the given location to the stop in degrees
      */
     fun getDistance(latitude: Double, longitude: Double): Double{
-        return (abs(_latitude - latitude) + abs(_longitude - longitude)) * DEGREES_TO_MILES
+        Log.d("Distances", "($latitude, $longitude) <-> ($_latitude, $_longitude)")
+        return (sqrt((latitude - _latitude).pow(2) + (longitude - _longitude).pow(2))) * DEGREES_TO_MILES
     }
 
     /**
@@ -122,7 +126,7 @@ class Stop {
      * @return the estimated time until the next bus arrives at the stop in minutes
      */
     fun updateTimeUntilNextBus(database: DatabaseManager){
-        val currentHour = LocalTime.now().hour.toString()
+        val currentHour = "12"//LocalTime.now().hour.toString()
 
         val routesData = database.getClosestArrivalTimesByStop(_id, currentHour)
         val routes = mutableListOf<Route>()
@@ -133,6 +137,7 @@ class Stop {
 
         routes.sortedBy { it.arrival }
         if(routes.size > 0) {
+            Log.d(":OneStepAway", "${routes}")
             _minutesToNextBus = routes[0].arrival.minute - LocalTime.now().minute
         }else{
             _minutesToNextBus = -1

@@ -47,9 +47,9 @@ class StopsListFragment : Fragment() {
 
                 _viewModel.updateStopArrivalTimes()
 
-                _viewModel.stops.sortedBy {
+                /*_viewModel.stops.sortedBy {
                     it.minutesToNextBus
-                }
+                }*/
 
                 adapter = StopRecyclerViewAdapter(_viewModel.stops)
             }
