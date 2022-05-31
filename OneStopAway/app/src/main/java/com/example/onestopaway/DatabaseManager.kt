@@ -191,7 +191,7 @@ class DatabaseManager(context: Context) : SQLiteOpenHelper(context, "database", 
     fun getStopsOnRoute(id: Int): List<List<String>>{
         val result = mutableListOf<List<String>>()
         val param = Array<String>(1){id.toString()}
-        val cursor = writableDatabase.rawQuery( "SELECT STOP.name FROM STOP INNER JOIN ROUTE ON STOP.id = ROUTE.stop_id WHERE ROUTE.stop_id = ?",
+        val cursor = writableDatabase.rawQuery( "SELECT STOP.name FROM STOP INNER JOIN ROUTE ON STOP.STOP_ID = ROUTE.stop_id WHERE ROUTE.stop_id = ?",
             param)
 
         while(cursor.moveToNext()){

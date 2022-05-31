@@ -59,6 +59,8 @@ class MainActivity : AppCompatActivity() {
                             commit()
                         }
                     } else {
+                        // Populate nearest stops
+                        viewModel.distanceSearch(48.732738179977346, -122.4850819708947, 50.0)
                         val newFrag = RouteListFragment.newInstance(viewModel)
                         supportFragmentManager.beginTransaction().apply {
                             replace(R.id.main_page_container, newFrag)
@@ -76,6 +78,8 @@ class MainActivity : AppCompatActivity() {
                         commit()
                     }
                 } else {
+                    // Populate ViewModel with favorites
+                    viewModel.populateFavorites()
                     val newFrag = FavoritesFragment.newInstance(viewModel)
                     supportFragmentManager.beginTransaction().apply {
                         replace(R.id.main_page_container, newFrag)
@@ -93,6 +97,8 @@ class MainActivity : AppCompatActivity() {
                         commit()
                     }
                 } else {
+                    // Populate nearest stops
+                    viewModel.distanceSearch(48.732738179977346, -122.4850819708947, 50.0)
                     val newFrag = StopsListFragment.newInstance(viewModel)
                     supportFragmentManager.beginTransaction().apply {
                         replace(R.id.main_page_container, newFrag)

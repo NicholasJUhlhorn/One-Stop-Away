@@ -34,7 +34,11 @@ class StopRecyclerViewAdapter(
         val item = values[position]
         holder.nameView.text = item.name
         holder.numberView.text = item.id.toString()
-        holder.nextBusView.text = "Next Bus in ${item.minutesToNextBus} minutes"
+        if(item.minutesToNextBus >= 0) {
+            holder.nextBusView.text = "Next Bus in ${item.minutesToNextBus} minutes"
+        }else{
+            holder.nextBusView.text = "No bus this hour"
+        }
     }
 
     override fun getItemCount(): Int = values.size

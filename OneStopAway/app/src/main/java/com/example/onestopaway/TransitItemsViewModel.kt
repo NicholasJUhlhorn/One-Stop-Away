@@ -81,7 +81,7 @@ class TransitItemsViewModel(context: Context): ViewModel() {
 
         // Get all stops and routes from the database
         val stopStrings = _databaseManager.readAllStops()
-        val routeStrings = _databaseManager.readAllRoutes()
+        val routeStrings = _databaseManager.readAllTrips()
 
         // convert and add each stop to _stops
         stopStrings.forEach {
