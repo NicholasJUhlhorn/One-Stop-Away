@@ -33,8 +33,8 @@ class DatabaseManager(context: Context) : SQLiteOpenHelper(context, "database", 
 
         db?.execSQL("CREATE TABLE IF NOT EXISTS $STOP_TABLE_NAME(${Stop.ID_COL}, ${Stop.NUMBER_COL},${Stop.NAME_COL}," +
                 " ${Stop.LAT_COL}, ${Stop.LONG_COL}, ${Stop.FAV_COL})")
-        db?.execSQL("CREATE TABLE IF NOT EXISTS $TRIP_TABLE_NAME(${Route.TRIP_ID_COL}, ${Route.NAME_COL}, ${Route.FAV_COL})")
-        db?.execSQL("CREATE TABLE IF NOT EXISTS $ROUTE_TABLE_NAME(${Route.TRIP_ID_COL}, ${Route.ARRIVAL_TIME_COL}, " +
+        db?.execSQL("CREATE TABLE IF NOT EXISTS $TRIP_TABLE_NAME(${Trip.TRIP_ID_COL}, ${Trip.NAME_COL}, ${Trip.FAV_COL})")
+        db?.execSQL("CREATE TABLE IF NOT EXISTS $ROUTE_TABLE_NAME(${Trip.TRIP_ID_COL}, ${Route.ARRIVAL_TIME_COL}, " +
                 "${Route.DEP_TIME_COL}, ${Stop.ID_COL})")
     }
 
@@ -66,9 +66,9 @@ class DatabaseManager(context: Context) : SQLiteOpenHelper(context, "database", 
 
     fun insertTrip(id: Int, head: String, fav: Int){
         val values = ContentValues()
-        values.put(Route.NAME_COL, head)
-        values.put(Route.TRIP_ID_COL, id)
-        values.put(Route.FAV_COL, fav)
+        values.put(Trip.NAME_COL, head)
+        values.put(Trip.TRIP_ID_COL, id)
+        values.put(Trip.FAV_COL, fav)
         writableDatabase.insertWithOnConflict(TRIP_TABLE_NAME, null, values, CONFLICT_REPLACE)
 
 
@@ -76,7 +76,7 @@ class DatabaseManager(context: Context) : SQLiteOpenHelper(context, "database", 
 
     fun insertRoute(id: Int, at: String, dt: String, stop: Int){
         val values = ContentValues()
-        values.put(Route.TRIP_ID_COL, id)
+        values.put(Route.ROUTE_ID_COL, id)
         values.put(Route.ARRIVAL_TIME_COL, at)
         values.put(Route.DEP_TIME_COL, dt)
         values.put(Stop.ID_COL, stop)
@@ -117,6 +117,7 @@ class DatabaseManager(context: Context) : SQLiteOpenHelper(context, "database", 
 
             row.add(cursor.getInt(0).toString())
             row.add(cursor.getString(1))
+            row.add(cursor.getString(2))
 
             result.add(row)
         }
@@ -176,7 +177,7 @@ class DatabaseManager(context: Context) : SQLiteOpenHelper(context, "database", 
     fun getRouteID(name: String): Int{
         val id: Int
         val param = Array(1){name}
-        val cursor = writableDatabase.rawQuery("SELECT $TRIP_TABLE_NAME.${Route.TRIP_ID_COL} FROM $TRIP_TABLE_NAME WHERE $TRIP_TABLE_NAME.${Route.NAME_COL} = ?", param)
+        val cursor = writableDatabase.rawQuery("SELECT $TRIP_TABLE_NAME.${Route.ROUTE_ID_COL} FROM $TRIP_TABLE_NAME WHERE $TRIP_TABLE_NAME.${Route.NAME_COL} = ?", param)
 
 
         cursor.moveToNext()

@@ -9,7 +9,7 @@ import androidx.lifecycle.ViewModel
 class TransitItemsViewModel(context: Context): ViewModel() {
 
     private var _stops = mutableListOf<Stop>()
-    private var _routes = mutableListOf<Route>()
+    private var _trips = mutableListOf<Trip>()
 
     private val _databaseManager = DatabaseManager.getDatabase(context)
 
@@ -17,8 +17,8 @@ class TransitItemsViewModel(context: Context): ViewModel() {
     val stops
         get() = _stops
 
-    val routes
-        get() = _routes
+    val trips
+        get() = _trips
 
     /**
      * Populates _stops and _routes based on the given keyword
@@ -34,11 +34,11 @@ class TransitItemsViewModel(context: Context): ViewModel() {
     fun populateAll(){
         // Reset the stop and route list
         _stops = mutableListOf<Stop>()
-        _routes = mutableListOf<Route>()
+        _trips = mutableListOf<Trip>()
 
         // Get all stops and routes from the database
         val stopStrings = _databaseManager.readAllStops()
-        val routeStrings = _databaseManager.readAllRoutes()
+        val tripStrings = _databaseManager.readAllTrips()
 
         // convert and add each stop to _stops
         stopStrings.forEach {
@@ -56,7 +56,7 @@ class TransitItemsViewModel(context: Context): ViewModel() {
     fun distanceSearch(latitude: Double, longitude: Double, maxDistance: Double) {
         // Reset the stop and route list
         _stops = mutableListOf<Stop>()
-        _routes = mutableListOf<Route>()
+        _trips = mutableListOf<Trip>()
 
         // Get all stops and routes from the database
         val stopStrings = _databaseManager.readAllStops()
@@ -75,15 +75,15 @@ class TransitItemsViewModel(context: Context): ViewModel() {
 
         routeStrings.forEach {
             // Make new route from row
-            val newRoute = makeRouteFromDB(it)
+            val newTrip = makeTripFromDB(it)
 
             // If the route has one of the stops listed then add it
             // NOTE: This might be costly...
             var added: Boolean = false
-            for (routeStop in newRoute.stops) {
+            for (tripStop in newTrip.stops) {
                 for (stop in _stops){
-                    if(stop.compareStop(routeStop)){
-                        _routes.add(newRoute)
+                    if(stop.compareStop(tripStop)){
+                        _trips.add(newTrip)
                         added = true
                     }
                     if(added){
@@ -104,7 +104,7 @@ class TransitItemsViewModel(context: Context): ViewModel() {
     fun populateFavorites(){
         // Reset the stop and route list
         _stops = mutableListOf<Stop>()
-        _routes = mutableListOf<Route>()
+        _trips = mutableListOf<Trip>()
 
         // Get all stops and routes from the database
         val stopStrings = _databaseManager.getFavoriteStops()
@@ -118,18 +118,18 @@ class TransitItemsViewModel(context: Context): ViewModel() {
 
         routeStrings.forEach {
             // Make new route from row
-            _routes.add(makeRouteFromDB(it))
+            _trips.add(makeTripFromDB(it))
         }
     }
 
     /**
      * Populates _stops and _routes based on predetermined lists of stops and routes
      * @param stops Preexisting list of Stops
-     * @param routes Preexisting list of Routes
+     * @param trips Preexisting list of Routes
      */
-    fun preexistingPopulate(stops: MutableList<Stop>, routes: MutableList<Route>){
+    fun preexistingPopulate(stops: MutableList<Stop>, trips: MutableList<Trip>){
         _stops = stops
-        _routes = routes
+        _trips = trips
     }
 
     /**
@@ -154,22 +154,23 @@ class TransitItemsViewModel(context: Context): ViewModel() {
      * @param stopData A List<String> of the stop data
      * @return Route created from the Database data
      */
-    fun makeRouteFromDB(routeData: List<String>): Route{
-        val routeId =   routeData[0].toInt()
-        val routeName = routeData[1]
+    fun makeTripFromDB(TripData: List<String>): Trip{
+        val tripId =   TripData[0].toInt()
+        val tripName = TripData[1]
+        val tripFavorite = TripData[2].toShort()
 
         // Get Route Stops
-        val stopData = _databaseManager.getStopsOnRoute(routeId)
-        val routeStops = mutableListOf<Stop>()
+        val stopData = _databaseManager.getStopsOnRoute(tripId)
+        val tripStops = mutableListOf<Stop>()
         _databaseManager.close()
 
         stopData.forEach {
             // Make stop from row
-            routeStops.add(makeStopFromDB(it))
+            tripStops.add(makeStopFromDB(it))
         }
 
         // Make route and return
-        return Route(routeId, routeName, routeStops)
+        return Trip(tripId, tripName, tripFavorite, tripStops)
     }
 
 
