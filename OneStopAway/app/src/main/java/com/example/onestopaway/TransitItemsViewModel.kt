@@ -89,6 +89,7 @@ class TransitItemsViewModel(context: Context): ViewModel() {
             val newStop = Stop(it)
 
             // If the stop is in range add it to the list
+            Log.d("Distances", " Distance to ${newStop.name} = ${newStop.getDistance(latitude, longitude)}")
             if(newStop.getDistance(latitude, longitude) <= maxDistance){
                 _stops.add(newStop)
             }
@@ -116,6 +117,9 @@ class TransitItemsViewModel(context: Context): ViewModel() {
                 }
             }
         }
+
+        Log.d("OneStopAway", "Distance ($maxDistance) Stops: ${_stops.size}")
+        Log.d("OneStopAway", "Distance ($maxDistance) Trips: ${_trips.size}")
 
     }
 
