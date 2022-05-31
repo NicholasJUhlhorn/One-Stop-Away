@@ -5,21 +5,28 @@ import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteDatabase.CONFLICT_REPLACE
 import android.database.sqlite.SQLiteOpenHelper
+import kotlinx.coroutines.InternalCoroutinesApi
+import kotlinx.coroutines.internal.synchronized
 
 class DatabaseManager(context: Context) : SQLiteOpenHelper(context, "database", null, 1) {
 
 
     companion object {
+
         const val STOP_TABLE_NAME = "STOP"
         const val TRIP_TABLE_NAME = "TRIP"
         const val ROUTE_TABLE_NAME = "ROUTE"
 
         //singleton for the database manager
+        @Volatile
         private var INSTANCE : DatabaseManager? = null
 
-        fun getDatabase(context: Context): DatabaseManager {
-            return INSTANCE ?: DatabaseManager(context)
-        }
+        @OptIn(InternalCoroutinesApi::class)
+        fun getDatabase(context: Context): DatabaseManager =
+            INSTANCE ?: synchronized(this) {
+                val newDB = INSTANCE ?:DatabaseManager(context).also { INSTANCE = it }
+                newDB
+            }
     }
 
     override fun onCreate(db: SQLiteDatabase?) {
@@ -75,6 +82,7 @@ class DatabaseManager(context: Context) : SQLiteOpenHelper(context, "database", 
         values.put(Stop.ID_COL, stop)
 
         writableDatabase.insertWithOnConflict(ROUTE_TABLE_NAME, null, values, CONFLICT_REPLACE)
+
 
     }
 
@@ -224,7 +232,6 @@ class DatabaseManager(context: Context) : SQLiteOpenHelper(context, "database", 
             result.add(row)
         }
         cursor.close()
-
         return result
     }
 }
