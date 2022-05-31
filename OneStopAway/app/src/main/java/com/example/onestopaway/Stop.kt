@@ -50,6 +50,20 @@ class Stop {
         _isFavorite = isFavorite
     }
 
+    /**
+     * A Helper function that takes in the database manager return of a stop and returns a Stop
+     * @param stopData A List<String> of the stop data
+     * @return Stop created from the Database data
+     */
+    constructor(stopData: List<String>){
+        _id         = stopData[0].toInt()
+        _number     = stopData[1].toInt()
+        _name       = stopData[2]
+        _latitude   = stopData[3].toDouble()
+        _longitude  = stopData[4].toDouble()
+        _isFavorite = stopData[5].toShort()
+    }
+
     //column names for STOP table
     companion object {
         const val NUMBER_COL = "stop_number"

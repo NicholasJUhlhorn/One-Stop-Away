@@ -36,6 +36,18 @@ class Route {
         _departure = departure
     }
 
+    /**
+     * A Helper function that takes in the database manager return of a route and returns a Route
+     * @param routeData A List<String> of the route data
+     * @return Route created from the Database data
+     */
+    constructor(routeData: List<String>){
+        _name = routeData[0]
+        _trip_id = routeData[1].toInt()
+        _arrival = LocalTime.parse(routeData[2])
+        _departure = LocalTime.parse(routeData[3])
+    }
+
     //Column names for ROUTE table
     companion object {
         const val NAME_COL = "head_sign"

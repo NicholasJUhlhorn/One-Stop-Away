@@ -3,6 +3,8 @@
 // CSCI 412
 package com.example.onestopaway
 
+import android.content.Context
+
 /**
  * A class that contains the data for a route
  * @property name The name of the route
@@ -36,6 +38,30 @@ class Trip {
         _name = name
         _isFavorite = isFavorite
         _stops = stops
+    }
+
+    /**
+     * A Helper function that takes in the database manager return of a trip and returns a Trip
+     * @param tripData A List<String> of the trip data
+     * @return Trip created from the Database data
+     */
+    constructor(tripData: List<String>, context: Context){
+        _id =   tripData[0].toInt()
+        _name = tripData[1]
+        _isFavorite = tripData[2].toShort()
+
+        // Get Route Stops
+        val db = DatabaseManager.getDatabase(context)
+        val stopData = db.getStopsOnRoute(_id)
+        val tripStops = mutableListOf<Stop>()
+        db.close()
+
+        stopData.forEach {
+            // Make stop from row
+            tripStops.add(Stop(it))
+        }
+
+        _stops = tripStops
     }
 
     companion object {
