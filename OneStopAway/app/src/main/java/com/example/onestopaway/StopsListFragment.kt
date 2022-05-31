@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.ViewModel
 import com.example.onestopaway.placeholder.PlaceholderContent
 
 /**
@@ -18,6 +19,7 @@ import com.example.onestopaway.placeholder.PlaceholderContent
 class StopsListFragment : Fragment() {
 
     private var columnCount = 1
+    private lateinit var _viewModel: TransitItemsViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,11 +45,13 @@ class StopsListFragment : Fragment() {
                     else -> GridLayoutManager(context, columnCount)
                 }
 
-                val viewModel = TransitItemsViewModel(context)
-                viewModel.populateAll()
-                viewModel.updateStopArrivalTimes()
-                Log.d("OneStopAway", "Size of list: ${viewModel.stops.size}")
-                adapter = StopRecyclerViewAdapter(viewModel.stops)
+                _viewModel.updateStopArrivalTimes()
+
+                _viewModel.stops.sortedBy {
+                    it.minutesToNextBus
+                }
+
+                adapter = StopRecyclerViewAdapter(_viewModel.stops)
             }
         }
         return view
@@ -65,11 +69,9 @@ class StopsListFragment : Fragment() {
 
         // TODO: Customize parameter initialization
         @JvmStatic
-        fun newInstance(columnCount: Int) =
+        fun newInstance(viewModel: TransitItemsViewModel) =
             StopsListFragment().apply {
-                arguments = Bundle().apply {
-                    putInt(ARG_COLUMN_COUNT, columnCount)
-                }
+                _viewModel = viewModel
             }
     }
 }

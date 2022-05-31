@@ -127,8 +127,6 @@ class Stop {
         val routesData = database.getClosestArrivalTimesByStop(_id, currentHour)
         val routes = mutableListOf<Route>()
 
-        Log.d("OneStopAway", "${routesData.size}")
-
         routesData.forEach {
             routes.add(Route(it))
         }

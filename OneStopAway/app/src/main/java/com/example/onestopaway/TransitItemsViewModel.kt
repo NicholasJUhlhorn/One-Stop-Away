@@ -4,6 +4,7 @@
 package com.example.onestopaway
 
 import android.content.Context
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import java.time.LocalTime
 
@@ -43,11 +44,19 @@ class TransitItemsViewModel(context: Context): ViewModel() {
         val stopStrings = _databaseManager.readAllStops()
         val tripStrings = _databaseManager.readAllTrips()
 
+        Log.d("OneStopAway", "Number of Stops: ${stopStrings.size}")
+        Log.d("OneStopAway", "Number of Trips: ${tripStrings.size}")
+
         // convert and add each stop to _stops
         stopStrings.forEach {
             // Make stop from row
             _stops.add(Stop(it))
         }
+
+        tripStrings.forEach {
+            _trips.add(Trip(it, _context))
+        }
+
     }
 
     /**
@@ -72,7 +81,7 @@ class TransitItemsViewModel(context: Context): ViewModel() {
 
         // Get all stops and routes from the database
         val stopStrings = _databaseManager.readAllStops()
-        val routeStrings = _databaseManager.readAllRoutes()
+        val routeStrings = _databaseManager.readAllTrips()
 
         // convert and add each stop to _stops
         stopStrings.forEach {
