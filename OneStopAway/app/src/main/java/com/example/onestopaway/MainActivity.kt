@@ -12,7 +12,7 @@ import kotlinx.coroutines.launch
 class MainActivity : AppCompatActivity() {
 
     private var _binding : ActivityMainBinding? = null
-    private val db : DatabaseManager = DatabaseManager(this)
+    private val db : DatabaseManager = DatabaseManager.getDatabase(this)
     private val dataRepo : DataRepository = DataRepository(db)
     private val viewModel : TransitItemsViewModel by viewModels()
     private val binding get() = _binding!!
@@ -31,11 +31,13 @@ class MainActivity : AppCompatActivity() {
             onOptionsItemSelected(it)
         }
 
-        db.clearDBAndRecreate()
+        if (savedInstanceState == null) {
+            db.clearDBAndRecreate()
 
-         GlobalScope.launch {
-             dataRepo.populateDatabase()
-         }
+            GlobalScope.launch {
+                dataRepo.populateDatabase()
+            }
+        }
 
 
     }
