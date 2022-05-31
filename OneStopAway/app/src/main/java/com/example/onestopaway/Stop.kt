@@ -5,6 +5,8 @@ package com.example.onestopaway
 
 import android.provider.ContactsContract
 import android.util.Log
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import java.time.LocalTime
 import kotlin.math.abs
 import kotlin.math.ceil
@@ -125,20 +127,20 @@ class Stop {
      * Gets the estimated time until the next bus arrives based on scheduled time
      * @return the estimated time until the next bus arrives at the stop in minutes
      */
-    fun updateTimeUntilNextBus(database: DatabaseManager){
-        val currentHour = "12"//LocalTime.now().hour.toString()
+    suspend fun updateTimeUntilNextBus(database: DatabaseManager){
+        val currentHour = LocalTime.now().hour.toString()
 
-        val routesData = database.getClosestArrivalTimesByStop(_id, currentHour)
-        val routes = mutableListOf<Route>()
+            val routesData = database.getClosestArrivalTimesByStop(_id, currentHour)
+
+        val routes = mutableListOf<LocalTime>()
 
         routesData.forEach {
-            routes.add(Route(it))
+            routes.add(LocalTime.parse(it))
         }
 
-        routes.sortedBy { it.arrival }
+        routes.sortedBy { it }
         if(routes.size > 0) {
-            Log.d(":OneStepAway", "${routes}")
-            _minutesToNextBus = routes[0].arrival.minute - LocalTime.now().minute
+            _minutesToNextBus = routes[0].minute - LocalTime.now().minute
         }else{
             _minutesToNextBus = -1
         }
