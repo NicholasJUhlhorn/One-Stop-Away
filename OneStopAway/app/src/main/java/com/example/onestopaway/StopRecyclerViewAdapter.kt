@@ -19,7 +19,7 @@ class StopRecyclerViewAdapter(
 ) : RecyclerView.Adapter<StopRecyclerViewAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        Log.d("OneStopAway", "${values.size}")
+
         return ViewHolder(
             FragmentStopsBinding.inflate(
                 LayoutInflater.from(parent.context),
@@ -34,7 +34,7 @@ class StopRecyclerViewAdapter(
         val item = values[position]
         holder.nameView.text = item.name
         holder.numberView.text = item.id.toString()
-
+        holder.nextBusView.text = "Next Bus in ${item.minutesToNextBus} minutes"
     }
 
     override fun getItemCount(): Int = values.size
@@ -42,6 +42,7 @@ class StopRecyclerViewAdapter(
     inner class ViewHolder(binding: FragmentStopsBinding) : RecyclerView.ViewHolder(binding.root) {
         val nameView: TextView = binding.stopName
         val numberView: TextView = binding.stopNumber
+        val nextBusView: TextView = binding.nextBusTime
 
         override fun toString(): String {
             return super.toString() + " '" + nameView.text + "'"

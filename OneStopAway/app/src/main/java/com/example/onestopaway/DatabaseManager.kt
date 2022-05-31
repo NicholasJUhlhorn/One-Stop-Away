@@ -5,6 +5,7 @@ import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteDatabase.CONFLICT_REPLACE
 import android.database.sqlite.SQLiteOpenHelper
+import android.util.Log
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.internal.synchronized
 
@@ -34,7 +35,7 @@ class DatabaseManager(context: Context) : SQLiteOpenHelper(context, "database", 
         db?.execSQL("CREATE TABLE IF NOT EXISTS $STOP_TABLE_NAME(${Stop.ID_COL}, ${Stop.NUMBER_COL},${Stop.NAME_COL}," +
                 " ${Stop.LAT_COL}, ${Stop.LONG_COL}, ${Stop.FAV_COL})")
         db?.execSQL("CREATE TABLE IF NOT EXISTS $TRIP_TABLE_NAME(${Trip.TRIP_ID_COL}, ${Trip.NAME_COL}, ${Trip.FAV_COL})")
-        db?.execSQL("CREATE TABLE IF NOT EXISTS $ROUTE_TABLE_NAME(${Trip.TRIP_ID_COL}, ${Route.ARRIVAL_TIME_COL}, " +
+        db?.execSQL("CREATE TABLE IF NOT EXISTS $ROUTE_TABLE_NAME(${Route.ROUTE_ID_COL}, ${Route.ARRIVAL_TIME_COL}, " +
                 "${Route.DEP_TIME_COL}, ${Stop.ID_COL})")
     }
 
@@ -223,7 +224,7 @@ class DatabaseManager(context: Context) : SQLiteOpenHelper(context, "database", 
         val result = mutableListOf<List<String>>()
 
 
-        val cursor = writableDatabase.rawQuery("SELECT * FROM $TRIP_TABLE_NAME WHERE $TRIP_TABLE_NAME.${Route.FAV_COL} = 1", null)
+        val cursor = writableDatabase.rawQuery("SELECT * FROM $TRIP_TABLE_NAME WHERE $TRIP_TABLE_NAME.${Trip.FAV_COL} = 1", null)
         while(cursor.moveToNext()){
             val row = mutableListOf<String>()
 
@@ -236,4 +237,28 @@ class DatabaseManager(context: Context) : SQLiteOpenHelper(context, "database", 
         cursor.close()
         return result
     }
+
+    fun getClosestArrivalTimesByStop(id: Int, hour: String): List<List<String>> {
+        val result = mutableListOf<List<String>>()
+        val params = arrayOf(id.toString(), "\'" + hour + ":%\'")
+
+        Log.d("OneStopAway", "${params[0]}, ${params[1]}")
+
+        val cursor = writableDatabase.rawQuery("SELECT * FROM $ROUTE_TABLE_NAME WHERE ${Stop.ID_COL} = ? AND ${Route.ARRIVAL_TIME_COL} LIKE ?", params)
+
+        while(cursor.moveToNext()){
+            val row = mutableListOf<String>()
+
+            row.add(cursor.getInt(0).toString())
+            row.add(cursor.getInt(1).toString())
+            row.add(cursor.getString(2))
+            row.add(cursor.getString(3))
+
+            result.add(row)
+        }
+        cursor.close()
+
+        return result
+    }
+
 }

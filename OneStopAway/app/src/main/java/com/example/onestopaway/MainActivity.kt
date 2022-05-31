@@ -14,15 +14,20 @@ class MainActivity : AppCompatActivity() {
     private var _binding : ActivityMainBinding? = null
     private val db : DatabaseManager = DatabaseManager.getDatabase(this)
     private val dataRepo : DataRepository = DataRepository(db)
-    private val viewModel : TransitItemsViewModel by viewModels()
+    private lateinit var viewModel : TransitItemsViewModel
     private val binding get() = _binding!!
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         _binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        // Create ViewModel
+        viewModel = TransitItemsViewModel(this)
+        viewModel.populateAll()
+
         //add the initial route list fragment
-        val route = RouteListFragment()
+        val route = RouteListFragment.newInstance(viewModel)
         supportFragmentManager.beginTransaction().apply {
             replace(R.id.main_page_container, route)
             commit()
@@ -54,7 +59,7 @@ class MainActivity : AppCompatActivity() {
                             commit()
                         }
                     } else {
-                        val newFrag = RouteListFragment()
+                        val newFrag = RouteListFragment.newInstance(viewModel)
                         supportFragmentManager.beginTransaction().apply {
                             replace(R.id.main_page_container, newFrag)
                             commit()
@@ -71,7 +76,7 @@ class MainActivity : AppCompatActivity() {
                         commit()
                     }
                 } else {
-                    val newFrag = FavoritesFragment()
+                    val newFrag = FavoritesFragment.newInstance(viewModel)
                     supportFragmentManager.beginTransaction().apply {
                         replace(R.id.main_page_container, newFrag)
                         commit()
@@ -88,7 +93,7 @@ class MainActivity : AppCompatActivity() {
                         commit()
                     }
                 } else {
-                    val newFrag = StopsListFragment()
+                    val newFrag = StopsListFragment.newInstance(viewModel)
                     supportFragmentManager.beginTransaction().apply {
                         replace(R.id.main_page_container, newFrag)
                         commit()
