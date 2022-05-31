@@ -19,7 +19,7 @@ class StopRecyclerViewAdapter(
 ) : RecyclerView.Adapter<StopRecyclerViewAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        Log.d("OneStopAway", "${values.size}")
+
         return ViewHolder(
             FragmentStopsBinding.inflate(
                 LayoutInflater.from(parent.context),

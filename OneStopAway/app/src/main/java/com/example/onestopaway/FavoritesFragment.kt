@@ -30,7 +30,7 @@ class FavoritesFragment : Fragment(), TabLayout.OnTabSelectedListener {
 
     private var _binding : FragmentFavoritesBinding? = null
     private val binding get() = _binding!!
-    private val viewModel : TransitItemsViewModel by activityViewModels()
+    private lateinit var _viewModel : TransitItemsViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,7 +38,7 @@ class FavoritesFragment : Fragment(), TabLayout.OnTabSelectedListener {
             param1 = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
         }
-        val initialFragment : StopsListFragment = StopsListFragment()
+        val initialFragment : StopsListFragment = StopsListFragment.newInstance(_viewModel)
         childFragmentManager.beginTransaction().apply {
             replace(R.id.favorites_container, initialFragment)
             commit()
@@ -67,12 +67,9 @@ class FavoritesFragment : Fragment(), TabLayout.OnTabSelectedListener {
          */
         // TODO: Rename and change types and number of parameters
         @JvmStatic
-        fun newInstance(param1: String, param2: String) =
+        fun newInstance(viewModel: TransitItemsViewModel) =
             FavoritesFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
+                _viewModel = viewModel
             }
     }
 
@@ -86,7 +83,7 @@ class FavoritesFragment : Fragment(), TabLayout.OnTabSelectedListener {
                         commit()
                     }
                 } else {
-                    val newFrag = StopsListFragment()
+                    val newFrag = StopsListFragment.newInstance(_viewModel)
                     childFragmentManager.beginTransaction().apply {
                         replace(R.id.favorites_container, newFrag)
                         commit()
@@ -102,7 +99,7 @@ class FavoritesFragment : Fragment(), TabLayout.OnTabSelectedListener {
                             commit()
                         }
                     } else {
-                        val newFrag = RouteListFragment()
+                        val newFrag = RouteListFragment.newInstance(_viewModel)
                         childFragmentManager.beginTransaction().apply {
                             replace(R.id.favorites_container, newFrag)
                             commit()
