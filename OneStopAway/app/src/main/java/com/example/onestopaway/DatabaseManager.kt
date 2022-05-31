@@ -223,7 +223,7 @@ class DatabaseManager(context: Context) : SQLiteOpenHelper(context, "database", 
         val result = mutableListOf<List<String>>()
 
 
-        val cursor = writableDatabase.rawQuery("SELECT * FROM $TRIP_TABLE_NAME WHERE $TRIP_TABLE_NAME.${Route.FAV_COL} = 1", null)
+        val cursor = writableDatabase.rawQuery("SELECT * FROM $TRIP_TABLE_NAME WHERE $TRIP_TABLE_NAME.${Trip.FAV_COL} = 1", null)
         while(cursor.moveToNext()){
             val row = mutableListOf<String>()
 
@@ -236,4 +236,26 @@ class DatabaseManager(context: Context) : SQLiteOpenHelper(context, "database", 
         cursor.close()
         return result
     }
+
+    fun getClosestArrivalTimesByStop(id: Int, hour: String): List<List<String>> {
+        val result = mutableListOf<List<String>>()
+        val params = arrayOf(id.toString(), hour + "\":%\"")
+
+        val cursor = writableDatabase.rawQuery("SELECT * FROM $ROUTE_TABLE_NAME WHERE ${Stop.ID_COL} == ? AND ${Route.ARRIVAL_TIME_COL} LIKE ?", params)
+
+        while(cursor.moveToNext()){
+            val row = mutableListOf<String>()
+
+            row.add(cursor.getInt(0).toString())
+            row.add(cursor.getInt(1).toString())
+            row.add(cursor.getString(2))
+            row.add(cursor.getString(3))
+
+            result.add(row)
+        }
+        cursor.close()
+
+        return result
+    }
+
 }
