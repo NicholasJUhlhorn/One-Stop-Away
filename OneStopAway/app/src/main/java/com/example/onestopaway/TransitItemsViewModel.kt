@@ -5,6 +5,7 @@ package com.example.onestopaway
 
 import android.content.Context
 import androidx.lifecycle.ViewModel
+import java.time.LocalTime
 
 class TransitItemsViewModel(context: Context): ViewModel() {
 
@@ -150,14 +151,14 @@ class TransitItemsViewModel(context: Context): ViewModel() {
     }
 
     /**
-     * A Helper function that takes in the database manager return of a route and returns a Route
-     * @param stopData A List<String> of the stop data
-     * @return Route created from the Database data
+     * A Helper function that takes in the database manager return of a trip and returns a Trip
+     * @param tripData A List<String> of the trip data
+     * @return Trip created from the Database data
      */
-    fun makeTripFromDB(TripData: List<String>): Trip{
-        val tripId =   TripData[0].toInt()
-        val tripName = TripData[1]
-        val tripFavorite = TripData[2].toShort()
+    fun makeTripFromDB(tripData: List<String>): Trip{
+        val tripId =   tripData[0].toInt()
+        val tripName = tripData[1]
+        val tripFavorite = tripData[2].toShort()
 
         // Get Route Stops
         val stopData = _databaseManager.getStopsOnRoute(tripId)
@@ -171,6 +172,20 @@ class TransitItemsViewModel(context: Context): ViewModel() {
 
         // Make route and return
         return Trip(tripId, tripName, tripFavorite, tripStops)
+    }
+
+    /**
+     * A Helper function that takes in the database manager return of a route and returns a Route
+     * @param routeData A List<String> of the route data
+     * @return Route created from the Database data
+     */
+    fun makeRouteFromDB(routeData: List<String>): Route{
+        val routeName = routeData[0]
+        val routeId = routeData[1].toInt()
+        val routeArrival = LocalTime.parse(routeData[2])
+        val routeDeparture = LocalTime.parse(routeData[3])
+
+        return Route(routeName, routeId, routeArrival, routeDeparture)
     }
 
 
