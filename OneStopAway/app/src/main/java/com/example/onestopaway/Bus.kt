@@ -25,7 +25,7 @@ class Bus {
     private var _speed: Double = 0.0
     private var _latitude: Double = 0.0
     private var _longitude: Double = 0.0
-    private lateinit var _nextStop: Stop
+    private var _nextStop: Stop
 
 
     // Getters and (Setters)

@@ -19,29 +19,30 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+
     <TextView
         android:id="@+id/stop_number"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/text_margin"
+        android:layout_marginStart="16dp"
+        android:layout_marginBottom="8dp"
         android:text="ID: 3156"
-        android:textAppearance="?attr/textAppearanceListItem"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/stop_name" />
-
-    <TextView
-        android:id="@+id/stop_locality"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/text_margin"
-        android:layout_marginTop="16dp"
-        android:text="Bellingham"
         android:textAppearance="?attr/textAppearanceListItem"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/stop_number" />
+        app:layout_constraintTop_toBottomOf="@+id/next_bus_time" />
 
-    <!-- Replace with star imageView?-->
+    <TextView
+        android:id="@+id/next_bus_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="13dp"
+        android:text="Next Bus at: 11:30:00"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/stop_name" />
+
     <ImageView
         android:layout_width="50dp"
         android:layout_height="50dp"
@@ -51,8 +52,9 @@
         android:src="@drawable/star_favorite_empty"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/stop_number"
-        app:layout_constraintTop_toBottomOf="@+id/stop_name" />
+        app:layout_constraintHorizontal_bias="0.822"
+        app:layout_constraintTop_toBottomOf="@+id/stop_name"
+        app:layout_constraintVertical_bias="0.0" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

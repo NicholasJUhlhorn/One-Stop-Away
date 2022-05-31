@@ -1,16 +1,42 @@
 package com.example.onestopaway
 
+import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
+import android.database.sqlite.SQLiteDatabase.CONFLICT_REPLACE
 import android.database.sqlite.SQLiteOpenHelper
-import androidx.appcompat.app.AppCompatActivity
-import java.time.LocalTime
 
-class DatabaseManager(context: Context) : SQLiteOpenHelper(context, "Database", null, 1){
+class DatabaseManager(context: Context) : SQLiteOpenHelper(context, "database", null, 1) {
+
+
+    companion object {
+        const val STOP_TABLE_NAME = "STOP"
+        const val TRIP_TABLE_NAME = "TRIP"
+        const val ROUTE_TABLE_NAME = "ROUTE"
+
+        //singleton for the database manager
+        private var INSTANCE : DatabaseManager? = null
+
+        fun getDatabase(context: Context): DatabaseManager {
+            return INSTANCE ?: DatabaseManager(context)
+        }
+    }
+
     override fun onCreate(db: SQLiteDatabase?) {
-        db?.execSQL("CREATE TABLE IF NOT EXISTS STOP(stop_number, name, latitude, longitude, locality, favorite)")
-        db?.execSQL("CREATE TABLE IF NOT EXISTS TRIP(id)")
-        db?.execSQL("CREATE TABLE IF NOT EXISTS ROUTE(id, arrival_time, departure_time, stop_id, favorite)")
+
+        db?.execSQL("CREATE TABLE IF NOT EXISTS $STOP_TABLE_NAME(${Stop.ID_COL}, ${Stop.NUMBER_COL},${Stop.NAME_COL}," +
+                " ${Stop.LAT_COL}, ${Stop.LONG_COL}, ${Stop.FAV_COL})")
+        db?.execSQL("CREATE TABLE IF NOT EXISTS $TRIP_TABLE_NAME(${Route.TRIP_ID_COL}, ${Route.NAME_COL}, ${Route.FAV_COL})")
+        db?.execSQL("CREATE TABLE IF NOT EXISTS $ROUTE_TABLE_NAME(${Route.TRIP_ID_COL}, ${Route.ARRIVAL_TIME_COL}, " +
+                "${Route.DEP_TIME_COL}, ${Stop.ID_COL})")
+    }
+
+    fun clearDBAndRecreate() {
+        writableDatabase.execSQL("DROP TABLE IF EXISTS $STOP_TABLE_NAME")
+        writableDatabase.execSQL("DROP TABLE IF EXISTS $ROUTE_TABLE_NAME")
+        writableDatabase.execSQL("DROP TABLE IF EXISTS $TRIP_TABLE_NAME")
+        onCreate(writableDatabase)
+        writableDatabase.close()
     }
 
     override fun onUpgrade(p0: SQLiteDatabase?, p1: Int, p2: Int) {
@@ -18,80 +44,186 @@ class DatabaseManager(context: Context) : SQLiteOpenHelper(context, "Database", 
     }
 
     //INSERT TO TABLES
-    fun insertStop(number: Int, nm: String, lat: Double, long: Double, loc: String, fav: Int){
-        writableDatabase.execSQL("INSERT INTO STOP VALUES($number, $nm, $lat, $long, $loc, $fav)")
+
+    fun insertStop(id: Int, number: Int, name: String, lat: String, long: String, fav: Int){
+        val values = ContentValues()
+        values.put(Stop.ID_COL, id)
+        values.put(Stop.NUMBER_COL, number)
+        values.put(Stop.NAME_COL, name)
+        values.put(Stop.LAT_COL, lat)
+        values.put(Stop.LONG_COL, long)
+        values.put(Stop.FAV_COL, fav)
+        writableDatabase.insertWithOnConflict(STOP_TABLE_NAME, null, values, CONFLICT_REPLACE)
+
     }
 
-    fun insertTrip(id: Int){
+    fun insertTrip(id: Int, head: String, fav: Int){
+        val values = ContentValues()
+        values.put(Route.NAME_COL, head)
+        values.put(Route.TRIP_ID_COL, id)
+        values.put(Route.FAV_COL, fav)
+        writableDatabase.insertWithOnConflict(TRIP_TABLE_NAME, null, values, CONFLICT_REPLACE)
+
 
     }
 
-    fun insertRoute(id: Int, at: String, dt: String, stop: Int, fav: Int){
-        writableDatabase.execSQL("INSERT INTO ROUTE VALUES($id, $at, $dt, $stop, $fav)")
+    fun insertRoute(id: Int, at: String, dt: String, stop: Int){
+        val values = ContentValues()
+        values.put(Route.TRIP_ID_COL, id)
+        values.put(Route.ARRIVAL_TIME_COL, at)
+        values.put(Route.DEP_TIME_COL, dt)
+        values.put(Stop.ID_COL, stop)
+
+        writableDatabase.insertWithOnConflict(ROUTE_TABLE_NAME, null, values, CONFLICT_REPLACE)
+
     }
 
     //READ FROM TABLES
     fun readAllStops(): List<List<String>>{
         val result = mutableListOf<List<String>>()
 
-        val cursor = writableDatabase.rawQuery("SELECT * FROM STOP", null)
-        while(cursor.moveToNext()){
-            val row = mutableListOf<String>()
-
-            row.add(cursor.getInt(0).toString())
-            row.add(cursor.getString(1))
-            row.add(cursor.getDouble(2).toString())
-            row.add(cursor.getDouble(3).toString())
-            row.add(cursor.getString(4))
-            row.add(cursor.getInt(5).toString())
-
-            result.add(row)
-        }
-
-        return result
-    }
-
-    fun readAllRoutes(): List<List<String>>{
-        val result = mutableListOf<List<String>>()
-
-        val cursor = writableDatabase.rawQuery("SELECT * FROM ROUTES", null)
+        val cursor = writableDatabase.rawQuery("SELECT * FROM $STOP_TABLE_NAME", null)
         while(cursor.moveToNext()){
             val row = mutableListOf<String>()
 
             row.add(cursor.getInt(0).toString())
             row.add(cursor.getString(1))
             row.add(cursor.getString(2))
-            row.add(cursor.getInt(3).toString())
+            row.add(cursor.getString(3))
             row.add(cursor.getInt(4).toString())
+            row.add(cursor.getString(5))
 
             result.add(row)
         }
+        cursor.close()
 
         return result
     }
 
-    //Gets arrival times based on stop
-    fun getArrivalTimeOnStop(stop_number: Int): List<String>{
-        val result = mutableListOf<String>()
+    fun readAllTrips(): List<List<String>>{
+        val result = mutableListOf<List<String>>()
 
-        TODO("JOIN SQL TABLES FOR QUERY")
-        val cursor = writableDatabase.rawQuery("SELECT A.arrival_time FROM STOP", null)
+        val cursor = writableDatabase.rawQuery("SELECT * FROM $TRIP_TABLE_NAME", null)
+        while(cursor.moveToNext()){
+            val row = mutableListOf<String>()
+
+            row.add(cursor.getInt(0).toString())
+            row.add(cursor.getString(1))
+
+            result.add(row)
+        }
+        cursor.close()
+        return result
+    }
+
+    fun readAllRoutes(): List<List<String>>{
+        val result = mutableListOf<List<String>>()
+
+
+        val cursor = writableDatabase.rawQuery("SELECT * FROM $ROUTE_TABLE_NAME", null)
+        while(cursor.moveToNext()){
+            val row = mutableListOf<String>()
+
+            row.add(cursor.getInt(0).toString())
+            row.add(cursor.getInt(1).toString())
+            row.add(cursor.getString(2))
+            row.add(cursor.getString(3))
+
+            result.add(row)
+        }
+        cursor.close()
+
+        return result
+    }
+
+    //Returns stop id based on stop name
+    fun getStopID(name: String): Int{
+        val id: Int
+        val param = Array<String>(1){name}
+
+        val cursor = writableDatabase.rawQuery("SELECT $STOP_TABLE_NAME.${Stop.ID_COL} FROM $STOP_TABLE_NAME WHERE $STOP_TABLE_NAME.${Stop.NAME_COL} = ?", param)
+        cursor.moveToNext()
+        id = cursor.getInt(0)
+        cursor.close()
+        return id
+    }
+
+    //Gets arrival times based on stop id
+    fun getArrivalTimeOnStop(stop_id: Int): List<String>{
+        val result = mutableListOf<String>()
+        val param = Array<String>(1){stop_id.toString()}
+
+
+        val cursor = writableDatabase.rawQuery("SELECT $ROUTE_TABLE_NAME.arrival_time FROM $STOP_TABLE_NAME INNER JOIN $ROUTE_TABLE_NAME ON $STOP_TABLE_NAME.id = $ROUTE_TABLE_NAME.stop_id WHERE $STOP_TABLE_NAME.${Stop.ID_COL} = ?",
+            param)
+
         while(cursor.moveToNext()){
             result.add(cursor.getString(0))
         }
-
+        cursor.close()
         return result
+    }
+
+    //Returns route id based on route name
+    fun getRouteID(name: String): Int{
+        val id: Int
+        val param = Array(1){name}
+        val cursor = writableDatabase.rawQuery("SELECT $TRIP_TABLE_NAME.${Route.TRIP_ID_COL} FROM $TRIP_TABLE_NAME WHERE $TRIP_TABLE_NAME.${Route.NAME_COL} = ?", param)
+
+
+        cursor.moveToNext()
+        id = cursor.getInt(0)
+        cursor.close()
+        return id
     }
 
     //Gets stops based on route id
     fun getStopsOnRoute(id: Int): List<List<String>>{
         val result = mutableListOf<List<String>>()
+        val param = Array<String>(1){id.toString()}
+        val cursor = writableDatabase.rawQuery( "SELECT STOP.name FROM STOP INNER JOIN ROUTE ON STOP.id = ROUTE.stop_id WHERE ROUTE.stop_id = ?",
+            param)
 
-        TODO("JOIN SQL TABLES FOR QUERY")
-        val cursor = writableDatabase.rawQuery("SELECT A.name FROM STOP", null)
         while(cursor.moveToNext()){
             result.add(listOf(cursor.getString(0)))
         }
+        cursor.close()
+        return result
+    }
+
+    fun getFavoriteStops() : List<List<String>> {
+        val result = mutableListOf<List<String>>()
+        val cursor = writableDatabase.rawQuery("SELECT * FROM $STOP_TABLE_NAME WHERE ${Stop.FAV_COL} = 1", null)
+        while(cursor.moveToNext()){
+            val row = mutableListOf<String>()
+
+            row.add(cursor.getInt(0).toString())
+            row.add(cursor.getString(1))
+            row.add(cursor.getString(2))
+            row.add(cursor.getString(3))
+            row.add(cursor.getInt(4).toString())
+
+            result.add(row)
+        }
+        cursor.close()
+        return result
+    }
+
+    fun getFavoriteTrips(): List<List<String>> {
+        val result = mutableListOf<List<String>>()
+
+
+        val cursor = writableDatabase.rawQuery("SELECT * FROM $TRIP_TABLE_NAME WHERE $TRIP_TABLE_NAME.${Route.FAV_COL} = 1", null)
+        while(cursor.moveToNext()){
+            val row = mutableListOf<String>()
+
+            row.add(cursor.getInt(0).toString())
+            row.add(cursor.getInt(1).toString())
+            row.add(cursor.getInt(2).toString())
+
+            result.add(row)
+        }
+        cursor.close()
 
         return result
     }

@@ -8,10 +8,17 @@ import androidx.lifecycle.ViewModel
 
 class TransitItemsViewModel(context: Context): ViewModel() {
 
-    var _stops = mutableListOf<Stop>()
-    var _routes = mutableListOf<Route>()
+    private var _stops = mutableListOf<Stop>()
+    private var _routes = mutableListOf<Route>()
 
-    val _databaseManager = DatabaseManager(context)
+    private val _databaseManager = DatabaseManager.getDatabase(context)
+
+    // Getters and Setters
+    val stops
+        get() = _stops
+
+    val routes
+        get() = _routes
 
     /**
      * Populates _stops and _routes based on the given keyword
@@ -22,12 +29,31 @@ class TransitItemsViewModel(context: Context): ViewModel() {
     }
 
     /**
+     * Populates _stops and _routes with all routes and stops
+     */
+    fun getAll(){
+        // Reset the stop and route list
+        _stops = mutableListOf<Stop>()
+        _routes = mutableListOf<Route>()
+
+        // Get all stops and routes from the database
+        val stopStrings = _databaseManager.readAllStops()
+        val routeStrings = _databaseManager.readAllRoutes()
+
+        // convert and add each stop to _stops
+        stopStrings.forEach {
+            // Make stop from row
+            _stops.add(makeStopFromDB(it))
+        }
+    }
+
+    /**
      * Populates _stops and _routes based on given location
      * @param latitude the latitude to search from
      * @param longitude the longitude to search from
      * @param maxDistance the maximum distance a stop can be from the location in miles
      */
-    fun distanceSearch(latitude: Double, longitude: Double, maxDistance: Double){
+    fun distanceSearch(latitude: Double, longitude: Double, maxDistance: Double) {
         // Reset the stop and route list
         _stops = mutableListOf<Stop>()
         _routes = mutableListOf<Route>()
@@ -89,12 +115,14 @@ class TransitItemsViewModel(context: Context): ViewModel() {
      */
     fun makeStopFromDB(stopData: List<String>): Stop{
         val stopId =        stopData[0].toInt()
-        val stopName =      stopData[1]
-        val stopLatitude =  stopData[2].toDouble()
-        val stopLongitude = stopData[3].toDouble()
+        val stopNum =       stopData[1].toInt()
+        val stopName =      stopData[2]
+        val stopLatitude =  stopData[3].toDouble()
+        val stopLongitude = stopData[4].toDouble()
+        val stopFavorited = stopData[5].toShort()
 
         // Make Stop and return
-        return Stop(stopId, stopName, stopLatitude, stopLongitude)
+        return Stop(stopId, stopNum, stopName, stopLatitude, stopLongitude, stopFavorited)
     }
 
     /**
@@ -118,5 +146,6 @@ class TransitItemsViewModel(context: Context): ViewModel() {
         // Make route and return
         return Route(routeId, routeName, routeStops)
     }
+
 
 }
