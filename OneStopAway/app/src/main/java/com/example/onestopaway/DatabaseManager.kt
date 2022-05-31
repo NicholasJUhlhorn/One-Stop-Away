@@ -35,7 +35,7 @@ class DatabaseManager(context: Context) : SQLiteOpenHelper(context, "database", 
         db?.execSQL("CREATE TABLE IF NOT EXISTS $STOP_TABLE_NAME(${Stop.ID_COL}, ${Stop.NUMBER_COL},${Stop.NAME_COL}," +
                 " ${Stop.LAT_COL}, ${Stop.LONG_COL}, ${Stop.FAV_COL})")
         db?.execSQL("CREATE TABLE IF NOT EXISTS $TRIP_TABLE_NAME(${Trip.TRIP_ID_COL}, ${Trip.NAME_COL}, ${Trip.FAV_COL})")
-        db?.execSQL("CREATE TABLE IF NOT EXISTS $ROUTE_TABLE_NAME(${Trip.TRIP_ID_COL}, ${Route.ARRIVAL_TIME_COL}, " +
+        db?.execSQL("CREATE TABLE IF NOT EXISTS $ROUTE_TABLE_NAME(${Route.ROUTE_ID_COL}, ${Route.ARRIVAL_TIME_COL}, " +
                 "${Route.DEP_TIME_COL}, ${Stop.ID_COL})")
     }
 
@@ -99,7 +99,7 @@ class DatabaseManager(context: Context) : SQLiteOpenHelper(context, "database", 
             row.add(cursor.getString(1))
             row.add(cursor.getString(2))
             row.add(cursor.getString(3))
-            row.add(cursor.getInt(4).toString())
+            row.add(cursor.getString(4))
             row.add(cursor.getString(5))
 
             result.add(row)
