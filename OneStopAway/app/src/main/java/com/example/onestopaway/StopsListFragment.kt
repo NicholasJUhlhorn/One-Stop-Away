@@ -2,6 +2,7 @@ package com.example.onestopaway
 
 import android.content.Context
 import android.os.Bundle
+import android.os.Parcelable
 import android.util.Log
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
@@ -10,6 +11,8 @@ import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModel
 import com.example.onestopaway.placeholder.PlaceholderContent
 
@@ -19,7 +22,10 @@ import com.example.onestopaway.placeholder.PlaceholderContent
 class StopsListFragment : Fragment() {
 
     private var columnCount = 1
-    private lateinit var _viewModel: TransitItemsViewModel
+    private var stops : List<Stop> = listOf()
+    private val viewModel : TransitItemsViewModel by activityViewModels {
+        TransitItemsViewmodelFactory((requireActivity().application as OneBusAway).repository)}
+    private lateinit var recyclerAdapter : StopRecyclerViewAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,37 +35,29 @@ class StopsListFragment : Fragment() {
         }
     }
 
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+    }
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_stops_list, container, false)
-
-        // TODO: Load model if it exists
+        viewModel.getClosestStops(48.73280011832849, -122.48508132534693, 1.0)
+        recyclerAdapter = StopRecyclerViewAdapter(viewModel.stops)
 
         // Set the adapter
         if (view is RecyclerView) {
             with(view) {
-                layoutManager = when {
-                    columnCount <= 1 -> LinearLayoutManager(context)
-                    else -> GridLayoutManager(context, columnCount)
-                }
-
-                _viewModel.updateStopArrivalTimes()
-
-                /*_viewModel.stops.sortedBy {
-                    it.minutesToNextBus
-                }*/
-
-                adapter = StopRecyclerViewAdapter(_viewModel.stops)
+                layoutManager = LinearLayoutManager(context)
+                adapter = recyclerAdapter
             }
         }
         return view
     }
 
-    override fun onAttach(context: Context) {
-        // TODO: Save model
-        super.onAttach(context)
+    override fun onResume() {
+        super.onResume()
     }
 
     companion object {
@@ -69,9 +67,9 @@ class StopsListFragment : Fragment() {
 
         // TODO: Customize parameter initialization
         @JvmStatic
-        fun newInstance(viewModel: TransitItemsViewModel) =
+        fun newInstance(data: List<Stop>) =
             StopsListFragment().apply {
-                _viewModel = viewModel
+                stops = data
             }
     }
 }

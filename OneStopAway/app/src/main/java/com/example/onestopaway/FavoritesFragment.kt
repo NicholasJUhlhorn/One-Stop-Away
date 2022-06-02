@@ -30,7 +30,7 @@ class FavoritesFragment : Fragment(), TabLayout.OnTabSelectedListener {
 
     private var _binding : FragmentFavoritesBinding? = null
     private val binding get() = _binding!!
-    private lateinit var _viewModel : TransitItemsViewModel
+    private val _viewModel : TransitItemsViewModel by activityViewModels {TransitItemsViewmodelFactory((requireActivity().application as OneBusAway).repository)}
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,7 +38,7 @@ class FavoritesFragment : Fragment(), TabLayout.OnTabSelectedListener {
             param1 = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
         }
-        val initialFragment : StopsListFragment = StopsListFragment.newInstance(_viewModel)
+        val initialFragment : StopsListFragment = StopsListFragment.newInstance(_viewModel.stops)
         childFragmentManager.beginTransaction().apply {
             replace(R.id.favorites_container, initialFragment)
             commit()
@@ -67,9 +67,8 @@ class FavoritesFragment : Fragment(), TabLayout.OnTabSelectedListener {
          */
         // TODO: Rename and change types and number of parameters
         @JvmStatic
-        fun newInstance(viewModel: TransitItemsViewModel) =
+        fun newInstance() =
             FavoritesFragment().apply {
-                _viewModel = viewModel
             }
     }
 
@@ -83,7 +82,7 @@ class FavoritesFragment : Fragment(), TabLayout.OnTabSelectedListener {
                         commit()
                     }
                 } else {
-                    val newFrag = StopsListFragment.newInstance(_viewModel)
+                    val newFrag = StopsListFragment.newInstance(_viewModel.stops)
                     childFragmentManager.beginTransaction().apply {
                         replace(R.id.favorites_container, newFrag)
                         commit()
@@ -99,7 +98,7 @@ class FavoritesFragment : Fragment(), TabLayout.OnTabSelectedListener {
                             commit()
                         }
                     } else {
-                        val newFrag = RouteListFragment.newInstance(_viewModel)
+                        val newFrag = RouteListFragment()
                         childFragmentManager.beginTransaction().apply {
                             replace(R.id.favorites_container, newFrag)
                             commit()

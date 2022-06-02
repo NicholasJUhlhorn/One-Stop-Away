@@ -3,12 +3,8 @@
 // CSCI 412
 package com.example.onestopaway
 
-import android.provider.ContactsContract
 import android.util.Log
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import java.time.LocalTime
-import kotlin.math.abs
 import kotlin.math.ceil
 import kotlin.math.pow
 import kotlin.math.sqrt
@@ -72,7 +68,6 @@ class Stop {
         _name       = stopData[2]
         _latitude   = stopData[3].toDouble()
         _longitude  = stopData[4].toDouble()
-        Log.d("WTF", "$_longitude")
         _isFavorite = stopData[5].toShort()
     }
 
@@ -127,10 +122,10 @@ class Stop {
      * Gets the estimated time until the next bus arrives based on scheduled time
      * @return the estimated time until the next bus arrives at the stop in minutes
      */
-    suspend fun updateTimeUntilNextBus(database: DatabaseManager){
-        val currentHour = LocalTime.now().hour.toString()
+    suspend fun updateTimeUntilNextBus(repository: DataRepository){
+        val currentTime = LocalTime.now()
 
-            val routesData = database.getClosestArrivalTimesByStop(_id, currentHour)
+            val routesData = repository.getAllTripsByStop(_id)
 
         val routes = mutableListOf<LocalTime>()
 
@@ -140,7 +135,7 @@ class Stop {
 
         routes.sortedBy { it }
         if(routes.size > 0) {
-            _minutesToNextBus = routes[0].minute - LocalTime.now().minute
+            _minutesToNextBus = routes[0].minute - currentTime.minute
         }else{
             _minutesToNextBus = -1
         }

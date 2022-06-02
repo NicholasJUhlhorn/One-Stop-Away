@@ -9,9 +9,9 @@ import java.util.*
 
 class DataRepository(private val database :DatabaseManager) {
 
-    val STOPURL = "https://raw.githubusercontent.com/whatcomtrans/publicwtadata/master/GTFS/wta_gtfs_latest/stops.txt"
-    val TRIPURL = "https://raw.githubusercontent.com/whatcomtrans/publicwtadata/master/GTFS/wta_gtfs_latest/trips.txt"
-    val ROUTEURL = "https://raw.githubusercontent.com/whatcomtrans/publicwtadata/master/GTFS/wta_gtfs_latest/stop_times.txt"
+    val STOPURL = "https://raw.githubusercontent.com/whatcomtrans/publicwtadata/9ce88a02297d7598496ebbf80fd42abf7164037d/GTFS/wta_gtfs_latest/stops.txt"
+    val TRIPURL = "https://raw.githubusercontent.com/whatcomtrans/publicwtadata/9ce88a02297d7598496ebbf80fd42abf7164037d/GTFS/wta_gtfs_latest/trips.txt"
+    val ROUTEURL = "https://raw.githubusercontent.com/whatcomtrans/publicwtadata/9ce88a02297d7598496ebbf80fd42abf7164037d/GTFS/wta_gtfs_latest/stop_times.txt"
     // keep track of fetched data for testing
     var numRoutesFetched = 0
     var numStopsFetched = 0
@@ -83,6 +83,71 @@ class DataRepository(private val database :DatabaseManager) {
 
         }
         database.close()
+    }
+
+   suspend fun readAllStops(): List<Stop> {
+        val stopStrings = database.readAllStops()
+        val stopList = mutableListOf<Stop>()
+        stopStrings.forEach {
+            stopList.add(Stop(it))
+        }
+        return stopList
+    }
+
+   suspend fun getFavoriteStops(): List<Stop> {
+        val stopList = mutableListOf<Stop>()
+        val stopData = database.getFavoriteStops()
+
+        stopData.forEach {
+
+            stopList.add(Stop(it))
+        }
+        return stopList
+    }
+
+    fun makeTripFromDB(tripData: List<String>): Trip{
+
+        // Get Route Stops
+        val stopData = database.getStopsOnRoute(tripData[2].toInt())
+        val routeStops = mutableListOf<Stop>()
+
+        stopData.forEach {
+            // Make stop from row
+            routeStops.add(Stop(it))
+        }
+
+        // Make route and return
+        return Trip(tripData, routeStops)
+    }
+
+   suspend fun readAllTrips(): List<Trip> {
+        val tripList = mutableListOf<Trip>()
+        val tripStrings = database.readAllTrips()
+
+        tripStrings.forEach {
+            tripList.add(makeTripFromDB(it))
+        }
+
+        return tripList
+
+
+    }
+
+    fun getFavoriteTrips(): List<Trip> {
+        val tripList = mutableListOf<Trip>()
+        val tripStrings = database.getFavoriteTrips()
+
+        tripStrings.forEach {
+            tripList.add(makeTripFromDB(it))
+        }
+
+        return tripList
+    }
+
+    fun getAllTripsByStop(id: Int): List<String> {
+
+        return database.getArrivalTimesByStop(id)
+
     }
 
 
