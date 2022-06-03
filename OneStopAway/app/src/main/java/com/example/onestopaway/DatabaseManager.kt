@@ -65,7 +65,7 @@ class DatabaseManager(context: Context) : SQLiteOpenHelper(context, "database", 
 
     }
 
-    fun insertTrip(id: Int, head: String, fav: Int){
+    fun insertTrip(id: String, head: String, fav: Int){
         val values = ContentValues()
         values.put(Trip.NAME_COL, head)
         values.put(Trip.TRIP_ID_COL, id)
@@ -75,7 +75,7 @@ class DatabaseManager(context: Context) : SQLiteOpenHelper(context, "database", 
 
     }
 
-    fun insertRoute(id: Int, at: String, dt: String, stop: Int){
+    fun insertRoute(id: String, at: String, dt: String, stop: Int){
         val values = ContentValues()
         values.put(Route.ROUTE_ID_COL, id)
         values.put(Route.ARRIVAL_TIME_COL, at)
@@ -190,7 +190,7 @@ class DatabaseManager(context: Context) : SQLiteOpenHelper(context, "database", 
     fun getStopsOnRoute(id: Int): List<List<String>>{
         val result = mutableListOf<List<String>>()
         val param = Array<String>(1){id.toString()}
-        val cursor = writableDatabase.rawQuery( "SELECT STOP.name FROM STOP INNER JOIN ROUTE ON STOP.stop_id = ROUTE.stop_id WHERE ROUTE.stop_id = ?",
+        val cursor = writableDatabase.rawQuery( "SELECT STOP.name FROM STOP INNER JOIN ROUTE ON STOP.id = ROUTE.stop_id WHERE ROUTE.stop_id = ?",
             param)
 
         while(cursor.moveToNext()){
