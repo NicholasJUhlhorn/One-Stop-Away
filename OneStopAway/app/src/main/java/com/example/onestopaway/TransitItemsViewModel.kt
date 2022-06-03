@@ -100,24 +100,6 @@ class TransitItemsViewModel(context: Context): ViewModel() {
         routeStrings.forEach {
             // Make new route from row
             val newTrip = Trip(it, _context)
-
-            // If the route has one of the stops listed then add it
-            // NOTE: This might be costly...
-            var added: Boolean = false
-            for (tripStop in newTrip.stops) {
-                for (stop in _stops){
-                    if(stop.compareStop(tripStop)){
-                        _trips.add(newTrip)
-                        added = true
-                    }
-                    if(added){
-                        break
-                    }
-                }
-                if(added){
-                    break
-                }
-            }
         }
 
         Log.d("OneStopAway", "Distance ($maxDistance) Stops: ${_stops.size}")
