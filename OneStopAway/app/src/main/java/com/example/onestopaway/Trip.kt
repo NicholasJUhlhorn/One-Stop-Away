@@ -20,15 +20,12 @@ class Trip {
     private var _name = "Default Name"
     private var _id: Int = 0
     private var _isFavorite: Short = 0
-    private var _stops: List<Stop>
 
     // Getters and (Setters)
     val name
         get() = _name
     val id
         get() = _id
-    val stops
-        get() = _stops
     val isFavorite
         get() = _isFavorite
 
@@ -37,7 +34,6 @@ class Trip {
         _id = id
         _name = name
         _isFavorite = isFavorite
-        _stops = stops
     }
 
     /**
@@ -53,15 +49,7 @@ class Trip {
         // Get Route Stops
         val db = DatabaseManager.getDatabase(context)
         val stopData = db.getStopsOnRoute(_id)
-        val tripStops = mutableListOf<Stop>()
         db.close()
-
-        stopData.forEach {
-            // Make stop from row
-            tripStops.add(Stop(it))
-        }
-
-        _stops = tripStops
     }
 
     companion object {
