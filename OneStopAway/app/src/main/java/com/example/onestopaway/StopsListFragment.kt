@@ -1,5 +1,6 @@
 package com.example.onestopaway
 
+import android.app.Activity
 import android.content.Context
 import android.os.Bundle
 import android.os.Parcelable
@@ -22,29 +23,34 @@ import com.example.onestopaway.placeholder.PlaceholderContent
 class StopsListFragment : Fragment() {
 
     private var columnCount = 1
+    private lateinit var listener : StopListener
     private var stops : List<Stop> = listOf()
-    private val viewModel : TransitItemsViewModel by activityViewModels {
-        TransitItemsViewmodelFactory((requireActivity().application as OneBusAway).repository)}
     private lateinit var recyclerAdapter : StopRecyclerViewAdapter
+    private val viewModel: TransitItemsViewModel by activityViewModels {TransitItemsViewmodelFactory((requireActivity().application as OneBusAway).repository)}
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        arguments?.let {
-            columnCount = it.getInt(ARG_COLUMN_COUNT)
+        if(savedInstanceState == null) {
+            viewModel.getClosestStops(48.73280011832849, -122.48508132534693, 1.0)
         }
+
+        Log.i("OneStopAway", "Size of stops " + viewModel.stops.size.toString())
     }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
     }
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_stops_list, container, false)
-        viewModel.getClosestStops(48.73280011832849, -122.48508132534693, 1.0)
         recyclerAdapter = StopRecyclerViewAdapter(viewModel.stops)
+
 
         // Set the adapter
         if (view is RecyclerView) {
@@ -56,20 +62,12 @@ class StopsListFragment : Fragment() {
         return view
     }
 
-    override fun onResume() {
-        super.onResume()
-    }
-
     companion object {
 
-        // TODO: Customize parameter argument names
-        const val ARG_COLUMN_COUNT = "column-count"
-
-        // TODO: Customize parameter initialization
         @JvmStatic
-        fun newInstance(data: List<Stop>) =
+        fun newInstance(lr: StopListener) =
             StopsListFragment().apply {
-                stops = data
+                listener = lr
             }
     }
 }

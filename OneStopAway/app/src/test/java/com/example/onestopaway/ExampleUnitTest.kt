@@ -1,9 +1,10 @@
 package com.example.onestopaway
 
-import androidx.test.core.app.ApplicationProvider
+import android.util.Log
+import com.google.transit.realtime.GtfsRealtime
 import org.junit.Test
+import java.net.URL
 
-import org.junit.Assert.*
 
 /**
  * Example local unit test, which will execute on the development machine (host).
@@ -11,8 +12,15 @@ import org.junit.Assert.*
  * See [testing documentation](http://d.android.com/tools/testing).
  */
 class ExampleUnitTest {
+    val TRIP_URL = "https://bustracker.ridewta.com/gtfsrt/trips"
     @Test
-    fun addition_isCorrect() {
-        assertEquals(4, 2 + 2)
+    fun parse_isCorrect() {
+        val tripurl = URL(TRIP_URL)
+        val feed = GtfsRealtime.FeedMessage.parseFrom(tripurl.openStream())
+        for (entity in feed.entityList) {
+            if (entity.id == "1") {
+                println(entity.toString())
+            }
+        }
     }
 }

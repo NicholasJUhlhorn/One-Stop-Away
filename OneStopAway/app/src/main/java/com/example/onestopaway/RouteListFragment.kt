@@ -16,14 +16,13 @@ import androidx.fragment.app.activityViewModels
 class RouteListFragment : Fragment() {
 
     private var columnCount = 1
-    private val _viewModel : TransitItemsViewModel by activityViewModels {TransitItemsViewmodelFactory((requireActivity().application as OneBusAway).repository)}
+    private val viewModel : TransitItemsViewModel by activityViewModels {
+        TransitItemsViewmodelFactory((requireActivity().application as OneBusAway).repository)}
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        arguments?.let {
-            columnCount = it.getInt(ARG_COLUMN_COUNT)
-        }
+        viewModel.getClosestTrips(48.73280011832849, -122.48508132534693, 1.0)
     }
 
     override fun onCreateView(
@@ -40,8 +39,7 @@ class RouteListFragment : Fragment() {
                     else -> GridLayoutManager(context, columnCount)
                 }
 
-                //_viewModel.getClosestTrips(48.73280011832849, -122.48508132534693, 1.0)
-                adapter = RouteRecyclerViewAdapter(_viewModel.trips)
+                adapter = RouteRecyclerViewAdapter(viewModel.trips)
             }
         }
         return view
@@ -54,7 +52,7 @@ class RouteListFragment : Fragment() {
 
         // TODO: Customize parameter initialization
         @JvmStatic
-        fun newInstance( data: List<Trip>) =
+        fun newInstance() =
             RouteListFragment().apply {
                 arguments = Bundle().apply {
                 }

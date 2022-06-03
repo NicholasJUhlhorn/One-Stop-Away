@@ -41,7 +41,6 @@ class DataRepository(private val database :DatabaseManager) {
             database.insertStop(Split[0].toInt(), Split[1].toInt(), Split[2], Split[4], Split[5], 0)
 
         }
-        database.close()
     }
 
     suspend fun populateTrips() {
@@ -61,7 +60,6 @@ class DataRepository(private val database :DatabaseManager) {
 
             database.insertTrip(spt[0].toInt(), spt[3], 0)
         }
-        database.close()
     }
 
     suspend fun populateRoutes() {

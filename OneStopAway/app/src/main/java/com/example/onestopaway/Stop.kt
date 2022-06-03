@@ -89,7 +89,6 @@ class Stop {
      * @return the Manhattan distance from the given location to the stop in degrees
      */
     fun getDistance(latitude: Double, longitude: Double): Double{
-        Log.d("Distances", "($latitude, $longitude) <-> ($_latitude, $_longitude)")
         return (sqrt((latitude - _latitude).pow(2) + (longitude - _longitude).pow(2))) * DEGREES_TO_MILES
     }
 
