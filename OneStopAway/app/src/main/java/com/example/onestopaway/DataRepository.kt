@@ -4,14 +4,16 @@ import android.util.Log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.json.JSONArray
+import org.json.JSONObject
 import java.net.URL
 import java.util.*
 
 class DataRepository(private val database :DatabaseManager) {
 
-    val STOPURL = "https://raw.githubusercontent.com/whatcomtrans/publicwtadata/9ce88a02297d7598496ebbf80fd42abf7164037d/GTFS/wta_gtfs_latest/stops.txt"
-    val TRIPURL = "https://raw.githubusercontent.com/whatcomtrans/publicwtadata/9ce88a02297d7598496ebbf80fd42abf7164037d/GTFS/wta_gtfs_latest/trips.txt"
-    val ROUTEURL = "https://raw.githubusercontent.com/whatcomtrans/publicwtadata/9ce88a02297d7598496ebbf80fd42abf7164037d/GTFS/wta_gtfs_latest/stop_times.txt"
+    val STOPURL = "https://api.ridewta.com/stops"
+    val TRIPURL = "https://raw.githubusercontent.com/whatcomtrans/publicwtadata/master/GTFS/wta_gtfs_latest/trips.txt"
+    val ROUTEURL = "https://raw.githubusercontent.com/whatcomtrans/publicwtadata/master/GTFS/wta_gtfs_latest/stop_times.txt"
     // keep track of fetched data for testing
     var numRoutesFetched = 0
     var numStopsFetched = 0
@@ -27,20 +29,17 @@ class DataRepository(private val database :DatabaseManager) {
 
     suspend fun populateStops() {
         val Surl = URL(STOPURL)
-        val scn = Scanner(Surl.openStream())
+        val content = Surl.readText()
 
-        var Line: String
-        var Split: List<String>
-
-        scn.nextLine()
-        while(scn.hasNextLine()){
-            Line = scn.nextLine()
-            Split = Line.split(",")
+        var arrayStop = JSONArray(content)
+        var obj: JSONObject
+        for(i in 0..(arrayStop.length() - 1)){
             numStopsFetched += 1
 
-            database.insertStop(Split[0].toInt(), Split[1].toInt(), Split[2], Split[4], Split[5], 0)
-
+            obj = arrayStop.getJSONObject(i)
+            database.insertStop(obj.getInt("id"), obj.getInt("stopNum"), obj.getString("name"), obj.getString("latitude"), obj.getString("longitude"), 0)
         }
+        database.close()
     }
 
     suspend fun populateTrips() {
@@ -58,7 +57,7 @@ class DataRepository(private val database :DatabaseManager) {
             spt = ln.split(",")
             numTripsFetched += 1
 
-            database.insertTrip(spt[0].toInt(), spt[3], 0)
+            database.insertTrip(spt[10], spt[6], 0)
         }
     }
 
@@ -77,7 +76,7 @@ class DataRepository(private val database :DatabaseManager) {
             split = line.split(",")
             numRoutesFetched += 1
 
-            database.insertRoute(split[0].toInt(), split[1], split[2], split[3].toInt())
+            database.insertRoute(split[0], split[1], split[2], split[3].toInt())
 
         }
         database.close()

@@ -30,7 +30,7 @@ class FavoritesFragment : Fragment(), TabLayout.OnTabSelectedListener {
 
     private var _binding : FragmentFavoritesBinding? = null
     private val binding get() = _binding!!
-    private val _viewModel : TransitItemsViewModel by activityViewModels {TransitItemsViewmodelFactory((requireActivity().application as OneBusAway).repository)}
+    private val viewModel : TransitItemsViewModel by activityViewModels {TransitItemsViewmodelFactory((requireActivity().application as OneBusAway).repository)}
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,11 +38,12 @@ class FavoritesFragment : Fragment(), TabLayout.OnTabSelectedListener {
             param1 = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
         }
-        /*val initialFragment : StopsListFragment = StopsListFragment.newInstance(this)
+        viewModel.populateFavorites()
+        val initialFragment : StopsListFragment = StopsListFragment.newInstance(this)
         childFragmentManager.beginTransaction().apply {
             replace(R.id.favorites_container, initialFragment)
             commit()
-        } */
+        }
     }
 
     override fun onCreateView(
@@ -82,11 +83,11 @@ class FavoritesFragment : Fragment(), TabLayout.OnTabSelectedListener {
                         commit()
                     }
                 } else {
-                    /*val newFrag = StopsListFragment.newInstance(_viewModel.stops)
+                    val newFrag = StopsListFragment.newInstance(viewModel.stops)
                     childFragmentManager.beginTransaction().apply {
                         replace(R.id.favorites_container, newFrag)
                         commit()
-                    } */
+                    }
 
                 }
 
