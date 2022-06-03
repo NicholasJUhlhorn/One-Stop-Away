@@ -30,8 +30,10 @@ class StopsListFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if(savedInstanceState == null) {
+        if(context is MainActivity) {
             viewModel.getClosestStops(48.73280011832849, -122.48508132534693, 1.0)
+        } else {
+            viewModel.populateFavorites()
         }
 
         Log.i("OneStopAway", "Size of stops " + viewModel.stops.size.toString())

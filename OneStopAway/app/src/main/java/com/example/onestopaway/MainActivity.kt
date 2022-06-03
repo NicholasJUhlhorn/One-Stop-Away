@@ -106,7 +106,7 @@ class MainActivity : AppCompatActivity(), StopListener {
                 } else {
                     // Populate ViewModel with favorites
 
-                    val newFrag = FavoritesFragment()
+                    val newFrag = FavoritesFragment.newInstance(this)
                     supportFragmentManager.beginTransaction().apply {
                         replace(R.id.main_page_container, newFrag)
                         commit()

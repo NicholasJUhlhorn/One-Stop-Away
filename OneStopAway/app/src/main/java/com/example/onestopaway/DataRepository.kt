@@ -37,7 +37,7 @@ class DataRepository(private val database :DatabaseManager) {
             numStopsFetched += 1
 
             obj = arrayStop.getJSONObject(i)
-            database.insertStop(obj.getInt("id"), obj.getInt("stopNum"), obj.getString("name"), obj.getString("latitude"), obj.getString("longitude"), 0)
+            database.insertStop(obj.getInt("id"), obj.getInt("stopNum"), obj.getString("name"), obj.getString("latitutde"), obj.getString("longitude"), 0)
         }
         database.close()
     }
@@ -76,8 +76,14 @@ class DataRepository(private val database :DatabaseManager) {
             split = line.split(",")
             numRoutesFetched += 1
 
-            database.insertRoute(split[0], split[1], split[2], split[3].toInt())
+            //handle edge case with stop_id merged
+            if(split[3].contains('_')) {
+                val stop_id_string = split[3].split('_')
+                database.insertRoute(split[0], split[1], split[2], stop_id_string[0].toInt())
 
+            } else {
+                database.insertRoute(split[0], split[1], split[2], split[3].toInt())
+            }
         }
         database.close()
     }

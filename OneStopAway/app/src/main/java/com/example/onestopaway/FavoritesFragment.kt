@@ -27,7 +27,7 @@ class FavoritesFragment : Fragment(), TabLayout.OnTabSelectedListener {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
-
+    private lateinit var listener: StopListener
     private var _binding : FragmentFavoritesBinding? = null
     private val binding get() = _binding!!
     private val viewModel : TransitItemsViewModel by activityViewModels {TransitItemsViewmodelFactory((requireActivity().application as OneBusAway).repository)}
@@ -38,8 +38,8 @@ class FavoritesFragment : Fragment(), TabLayout.OnTabSelectedListener {
             param1 = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
         }
-        viewModel.populateFavorites()
-        val initialFragment : StopsListFragment = StopsListFragment.newInstance(this)
+
+        val initialFragment : StopsListFragment = StopsListFragment.newInstance(listener)
         childFragmentManager.beginTransaction().apply {
             replace(R.id.favorites_container, initialFragment)
             commit()
@@ -68,8 +68,9 @@ class FavoritesFragment : Fragment(), TabLayout.OnTabSelectedListener {
          */
         // TODO: Rename and change types and number of parameters
         @JvmStatic
-        fun newInstance() =
+        fun newInstance(lr: StopListener) =
             FavoritesFragment().apply {
+                listener = lr
             }
     }
 
@@ -83,7 +84,8 @@ class FavoritesFragment : Fragment(), TabLayout.OnTabSelectedListener {
                         commit()
                     }
                 } else {
-                    val newFrag = StopsListFragment.newInstance(viewModel.stops)
+
+                    val newFrag = StopsListFragment.newInstance(listener)
                     childFragmentManager.beginTransaction().apply {
                         replace(R.id.favorites_container, newFrag)
                         commit()

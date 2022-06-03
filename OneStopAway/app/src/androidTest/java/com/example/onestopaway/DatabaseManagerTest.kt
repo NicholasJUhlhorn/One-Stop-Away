@@ -95,7 +95,7 @@ class DatabaseManagerTest {
     @ExperimentalCoroutinesApi
     fun favoriteTrips()  = runTest{
         repository.populateTrips()
-        db.insertTrip(44444, "334 Test/Trip",1)
+        db.insertTrip("44444", "334 Test/Trip",1)
 
         val result = db.getFavoriteTrips()
 
@@ -106,7 +106,7 @@ class DatabaseManagerTest {
     @ExperimentalCoroutinesApi
     fun getClosestArrivalTimesByStop() = runTest {
         repository.populateDatabase()
-        val result = db.getClosestArrivalTimesByStop(3, "12")
+        val result = db.getArrivalTimeOnStop(3)
 
         Log.d("Testing", result.toString())
         assertTrue(result.isNotEmpty())

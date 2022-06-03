@@ -80,7 +80,6 @@ class TransitItemsViewModel(private val repository: DataRepository): ViewModel()
             if(currStop.getDistance(latitude, longitude) <= maxDistance){
                 _stops.add(currStop)
             }
-            stops.sortedBy { currStop.getDistance(latitude, longitude) }
         }
 
         Log.d("OneStopAway", "Distance ($maxDistance) Stops: ${_stops.size}")
@@ -91,7 +90,7 @@ class TransitItemsViewModel(private val repository: DataRepository): ViewModel()
     fun getClosestTrips(latitude: Double, longitude: Double, maxDistance: Double) = viewModelScope.launch(Dispatchers.IO) {
         val trips = repository.readAllTrips()
 
-        /*trips.forEach { newTrip ->
+        trips.forEach { newTrip ->
             // If the route has one of the stops listed then add it
             // NOTE: This might be costly...
             var added: Boolean = false
@@ -109,7 +108,7 @@ class TransitItemsViewModel(private val repository: DataRepository): ViewModel()
                     break
                 }
             }
-        } */
+        }
     }
     fun populateDatabase() = viewModelScope.launch(Dispatchers.IO) {
         repository.populateDatabase()
