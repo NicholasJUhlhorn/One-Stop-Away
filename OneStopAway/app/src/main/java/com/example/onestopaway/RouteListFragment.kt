@@ -17,7 +17,7 @@ import com.example.onestopaway.placeholder.PlaceholderContent
 class RouteListFragment : Fragment() {
 
     private var columnCount = 1
-    private val viewModel: TransitItemsViewModel by activityViewModels()
+    private lateinit var _viewModel: TransitItemsViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,7 +40,8 @@ class RouteListFragment : Fragment() {
                     columnCount <= 1 -> LinearLayoutManager(context)
                     else -> GridLayoutManager(context, columnCount)
                 }
-                //adapter = RouteRecyclerViewAdapter()
+
+                adapter = RouteRecyclerViewAdapter(_viewModel.trips)
             }
         }
         return view
@@ -53,10 +54,10 @@ class RouteListFragment : Fragment() {
 
         // TODO: Customize parameter initialization
         @JvmStatic
-        fun newInstance(columnCount: Int) =
+        fun newInstance(viewModel: TransitItemsViewModel) =
             RouteListFragment().apply {
                 arguments = Bundle().apply {
-                    putInt(ARG_COLUMN_COUNT, columnCount)
+                   _viewModel = viewModel
                 }
             }
     }

@@ -1,6 +1,8 @@
 package com.example.onestopaway
 
+import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -8,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.ViewModel
 import com.example.onestopaway.placeholder.PlaceholderContent
 
 /**
@@ -16,6 +19,7 @@ import com.example.onestopaway.placeholder.PlaceholderContent
 class StopsListFragment : Fragment() {
 
     private var columnCount = 1
+    private lateinit var _viewModel: TransitItemsViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,6 +35,8 @@ class StopsListFragment : Fragment() {
     ): View? {
         val view = inflater.inflate(R.layout.fragment_stops_list, container, false)
 
+        // TODO: Load model if it exists
+
         // Set the adapter
         if (view is RecyclerView) {
             with(view) {
@@ -38,10 +44,22 @@ class StopsListFragment : Fragment() {
                     columnCount <= 1 -> LinearLayoutManager(context)
                     else -> GridLayoutManager(context, columnCount)
                 }
-                adapter = StopRecyclerViewAdapter(PlaceholderContent.ITEMS)
+
+                _viewModel.updateStopArrivalTimes()
+
+                /*_viewModel.stops.sortedBy {
+                    it.minutesToNextBus
+                }*/
+
+                adapter = StopRecyclerViewAdapter(_viewModel.stops)
             }
         }
         return view
+    }
+
+    override fun onAttach(context: Context) {
+        // TODO: Save model
+        super.onAttach(context)
     }
 
     companion object {
@@ -51,11 +69,9 @@ class StopsListFragment : Fragment() {
 
         // TODO: Customize parameter initialization
         @JvmStatic
-        fun newInstance(columnCount: Int) =
+        fun newInstance(viewModel: TransitItemsViewModel) =
             StopsListFragment().apply {
-                arguments = Bundle().apply {
-                    putInt(ARG_COLUMN_COUNT, columnCount)
-                }
+                _viewModel = viewModel
             }
     }
 }

@@ -5,29 +5,37 @@ import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteDatabase.CONFLICT_REPLACE
 import android.database.sqlite.SQLiteOpenHelper
+import android.util.Log
+import kotlinx.coroutines.InternalCoroutinesApi
+import kotlinx.coroutines.internal.synchronized
 
 class DatabaseManager(context: Context) : SQLiteOpenHelper(context, "database", null, 1) {
 
 
     companion object {
+
         const val STOP_TABLE_NAME = "STOP"
         const val TRIP_TABLE_NAME = "TRIP"
         const val ROUTE_TABLE_NAME = "ROUTE"
 
         //singleton for the database manager
+        @Volatile
         private var INSTANCE : DatabaseManager? = null
 
-        fun getDatabase(context: Context): DatabaseManager {
-            return INSTANCE ?: DatabaseManager(context)
-        }
+        @OptIn(InternalCoroutinesApi::class)
+        fun getDatabase(context: Context): DatabaseManager =
+            INSTANCE ?: synchronized(this) {
+                val newDB = INSTANCE ?:DatabaseManager(context).also { INSTANCE = it }
+                newDB
+            }
     }
 
     override fun onCreate(db: SQLiteDatabase?) {
 
         db?.execSQL("CREATE TABLE IF NOT EXISTS $STOP_TABLE_NAME(${Stop.ID_COL}, ${Stop.NUMBER_COL},${Stop.NAME_COL}," +
                 " ${Stop.LAT_COL}, ${Stop.LONG_COL}, ${Stop.FAV_COL})")
-        db?.execSQL("CREATE TABLE IF NOT EXISTS $TRIP_TABLE_NAME(${Route.TRIP_ID_COL}, ${Route.NAME_COL}, ${Route.FAV_COL})")
-        db?.execSQL("CREATE TABLE IF NOT EXISTS $ROUTE_TABLE_NAME(${Route.TRIP_ID_COL}, ${Route.ARRIVAL_TIME_COL}, " +
+        db?.execSQL("CREATE TABLE IF NOT EXISTS $TRIP_TABLE_NAME(${Trip.TRIP_ID_COL}, ${Trip.NAME_COL}, ${Trip.FAV_COL})")
+        db?.execSQL("CREATE TABLE IF NOT EXISTS $ROUTE_TABLE_NAME(${Route.ROUTE_ID_COL}, ${Route.ARRIVAL_TIME_COL}, " +
                 "${Route.DEP_TIME_COL}, ${Stop.ID_COL})")
     }
 
@@ -59,9 +67,9 @@ class DatabaseManager(context: Context) : SQLiteOpenHelper(context, "database", 
 
     fun insertTrip(id: Int, head: String, fav: Int){
         val values = ContentValues()
-        values.put(Route.NAME_COL, head)
-        values.put(Route.TRIP_ID_COL, id)
-        values.put(Route.FAV_COL, fav)
+        values.put(Trip.NAME_COL, head)
+        values.put(Trip.TRIP_ID_COL, id)
+        values.put(Trip.FAV_COL, fav)
         writableDatabase.insertWithOnConflict(TRIP_TABLE_NAME, null, values, CONFLICT_REPLACE)
 
 
@@ -69,12 +77,13 @@ class DatabaseManager(context: Context) : SQLiteOpenHelper(context, "database", 
 
     fun insertRoute(id: Int, at: String, dt: String, stop: Int){
         val values = ContentValues()
-        values.put(Route.TRIP_ID_COL, id)
+        values.put(Route.ROUTE_ID_COL, id)
         values.put(Route.ARRIVAL_TIME_COL, at)
         values.put(Route.DEP_TIME_COL, dt)
         values.put(Stop.ID_COL, stop)
 
         writableDatabase.insertWithOnConflict(ROUTE_TABLE_NAME, null, values, CONFLICT_REPLACE)
+
 
     }
 
@@ -90,7 +99,8 @@ class DatabaseManager(context: Context) : SQLiteOpenHelper(context, "database", 
             row.add(cursor.getString(1))
             row.add(cursor.getString(2))
             row.add(cursor.getString(3))
-            row.add(cursor.getInt(4).toString())
+            row.add(cursor.getString(4))
+            row.add(cursor.getString(5))
 
             result.add(row)
         }
@@ -108,6 +118,7 @@ class DatabaseManager(context: Context) : SQLiteOpenHelper(context, "database", 
 
             row.add(cursor.getInt(0).toString())
             row.add(cursor.getString(1))
+            row.add(cursor.getString(2))
 
             result.add(row)
         }
@@ -152,7 +163,6 @@ class DatabaseManager(context: Context) : SQLiteOpenHelper(context, "database", 
         val result = mutableListOf<String>()
         val param = Array<String>(1){stop_id.toString()}
 
-
         val cursor = writableDatabase.rawQuery("SELECT $ROUTE_TABLE_NAME.arrival_time FROM $STOP_TABLE_NAME INNER JOIN $ROUTE_TABLE_NAME ON $STOP_TABLE_NAME.id = $ROUTE_TABLE_NAME.stop_id WHERE $STOP_TABLE_NAME.${Stop.ID_COL} = ?",
             param)
 
@@ -167,7 +177,7 @@ class DatabaseManager(context: Context) : SQLiteOpenHelper(context, "database", 
     fun getRouteID(name: String): Int{
         val id: Int
         val param = Array(1){name}
-        val cursor = writableDatabase.rawQuery("SELECT $TRIP_TABLE_NAME.${Route.TRIP_ID_COL} FROM $TRIP_TABLE_NAME WHERE $TRIP_TABLE_NAME.${Route.NAME_COL} = ?", param)
+        val cursor = writableDatabase.rawQuery("SELECT $TRIP_TABLE_NAME.${Route.ROUTE_ID_COL} FROM $TRIP_TABLE_NAME WHERE $TRIP_TABLE_NAME.${Route.NAME_COL} = ?", param)
 
 
         cursor.moveToNext()
@@ -201,6 +211,7 @@ class DatabaseManager(context: Context) : SQLiteOpenHelper(context, "database", 
             row.add(cursor.getString(2))
             row.add(cursor.getString(3))
             row.add(cursor.getInt(4).toString())
+            row.add(cursor.getString(5))
 
             result.add(row)
         }
@@ -212,7 +223,7 @@ class DatabaseManager(context: Context) : SQLiteOpenHelper(context, "database", 
         val result = mutableListOf<List<String>>()
 
 
-        val cursor = writableDatabase.rawQuery("SELECT * FROM $TRIP_TABLE_NAME WHERE $TRIP_TABLE_NAME.${Route.FAV_COL} = 1", null)
+        val cursor = writableDatabase.rawQuery("SELECT * FROM $TRIP_TABLE_NAME WHERE $TRIP_TABLE_NAME.${Trip.FAV_COL} = 1", null)
         while(cursor.moveToNext()){
             val row = mutableListOf<String>()
 
@@ -223,7 +234,21 @@ class DatabaseManager(context: Context) : SQLiteOpenHelper(context, "database", 
             result.add(row)
         }
         cursor.close()
+        return result
+    }
+
+    fun getClosestArrivalTimesByStop(id: Int, hour: String): List<String> {
+        val result = mutableListOf<String>()
+        val hourwildcard = "$hour:%"
+        val cursor = writableDatabase.rawQuery("SELECT $ROUTE_TABLE_NAME.${Route.ARRIVAL_TIME_COL} FROM $ROUTE_TABLE_NAME WHERE ${Stop.ID_COL} = $id AND ${Route.ARRIVAL_TIME_COL} LIKE '$hourwildcard'", null)
+
+        while(cursor.moveToNext()){
+
+            result.add(cursor.getString(0))
+        }
+        cursor.close()
 
         return result
     }
+
 }

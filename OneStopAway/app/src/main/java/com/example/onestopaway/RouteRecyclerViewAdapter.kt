@@ -2,7 +2,6 @@ package com.example.onestopaway
 
 import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 
@@ -14,7 +13,7 @@ import com.example.onestopaway.databinding.FragmentRouteBinding
  * TODO: Replace the implementation with code for your data type.
  */
 class RouteRecyclerViewAdapter(
-    private val values: List<Route>
+    private val values: List<Trip>
 ) : RecyclerView.Adapter<RouteRecyclerViewAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {

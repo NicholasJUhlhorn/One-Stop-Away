@@ -1,5 +1,6 @@
 package com.example.onestopaway
 
+import android.util.Log
 import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
@@ -14,7 +15,7 @@ import com.example.onestopaway.databinding.FragmentStopsBinding
  * TODO: Replace the implementation with code for your data type.
  */
 class StopRecyclerViewAdapter(
-    private val values: List<PlaceholderItem>
+    private val values: List<Stop>
 ) : RecyclerView.Adapter<StopRecyclerViewAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -31,7 +32,13 @@ class StopRecyclerViewAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = values[position]
-
+        holder.nameView.text = item.name
+        holder.numberView.text = item.id.toString()
+        if(item.minutesToNextBus >= 0) {
+            holder.nextBusView.text = "Next Bus in ${item.minutesToNextBus} minutes"
+        }else{
+            holder.nextBusView.text = "No bus this hour"
+        }
     }
 
     override fun getItemCount(): Int = values.size
@@ -39,6 +46,7 @@ class StopRecyclerViewAdapter(
     inner class ViewHolder(binding: FragmentStopsBinding) : RecyclerView.ViewHolder(binding.root) {
         val nameView: TextView = binding.stopName
         val numberView: TextView = binding.stopNumber
+        val nextBusView: TextView = binding.nextBusTime
 
         override fun toString(): String {
             return super.toString() + " '" + nameView.text + "'"

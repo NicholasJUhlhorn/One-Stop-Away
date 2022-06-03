@@ -1,5 +1,6 @@
 package com.example.onestopaway
 
+import android.util.Log
 import androidx.test.platform.app.InstrumentationRegistry
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
@@ -25,7 +26,7 @@ class DatabaseManagerTest {
 
     @Test
     @ExperimentalCoroutinesApi
-    fun     stopsAreAdded() = runBlocking {
+    fun  stopsAreAdded() = runBlocking {
         repository.populateStops()
 
         assertTrue(repository.numStopsFetched > 1)
@@ -72,6 +73,7 @@ class DatabaseManagerTest {
 
         assertEquals(result.size, 1)
     }
+    @ExperimentalCoroutinesApi
     fun correctStop() = runTest {
         repository.populateStops()
         val test = db.getStopID("Bakerview Rd at Fred Meyer")
@@ -98,6 +100,17 @@ class DatabaseManagerTest {
         val result = db.getFavoriteTrips()
 
         assertEquals(result[0][0].toInt(), 44444)
+    }
+
+    @Test
+    @ExperimentalCoroutinesApi
+    fun getClosestArrivalTimesByStop() = runTest {
+        repository.populateDatabase()
+        val result = db.getClosestArrivalTimesByStop(3, "12")
+
+        Log.d("Testing", result.toString())
+        assertTrue(result.isNotEmpty())
+
     }
 
 
