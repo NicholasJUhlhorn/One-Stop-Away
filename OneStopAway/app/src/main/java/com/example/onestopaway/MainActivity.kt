@@ -12,10 +12,9 @@ import kotlinx.coroutines.launch
 class MainActivity : AppCompatActivity() {
 
     private var _binding : ActivityMainBinding? = null
-    private val db : DatabaseManager = DatabaseManager.getDatabase(this)
-    private val dataRepo : DataRepository = DataRepository(db)
-    private lateinit var viewModel : TransitItemsViewModel
+    private val viewModel : TransitItemsViewModel by viewModels { TransitItemsViewmodelFactory((application as OneBusAway).repository)}
     private val binding get() = _binding!!
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -23,11 +22,8 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         // Create ViewModel
-        viewModel = TransitItemsViewModel(this)
-        viewModel.populateAll()
-
         //add the initial route list fragment
-        val route = RouteListFragment.newInstance(viewModel)
+        val route = RouteListFragment()
         supportFragmentManager.beginTransaction().apply {
             replace(R.id.main_page_container, route)
             commit()
@@ -35,14 +31,12 @@ class MainActivity : AppCompatActivity() {
         binding.menuBar.setOnItemSelectedListener {
             onOptionsItemSelected(it)
         }
-
-        if (savedInstanceState == null) {
-            db.clearDBAndRecreate()
-
-            GlobalScope.launch {
-                dataRepo.populateDatabase()
-            }
+        if(savedInstanceState == null) {
+            viewModel.populateDatabase()
+            viewModel.populateAll()
         }
+
+
 
 
     }
@@ -59,9 +53,8 @@ class MainActivity : AppCompatActivity() {
                             commit()
                         }
                     } else {
-                        // Populate nearest stops
-                        viewModel.distanceSearch(48.732738179977346, -122.4850819708947, 50.0)
-                        val newFrag = RouteListFragment.newInstance(viewModel)
+                        // Populate nearest routes
+                        val newFrag = RouteListFragment()
                         supportFragmentManager.beginTransaction().apply {
                             replace(R.id.main_page_container, newFrag)
                             commit()
@@ -79,8 +72,8 @@ class MainActivity : AppCompatActivity() {
                     }
                 } else {
                     // Populate ViewModel with favorites
-                    viewModel.populateFavorites()
-                    val newFrag = FavoritesFragment.newInstance(viewModel)
+
+                    val newFrag = FavoritesFragment()
                     supportFragmentManager.beginTransaction().apply {
                         replace(R.id.main_page_container, newFrag)
                         commit()
@@ -98,8 +91,7 @@ class MainActivity : AppCompatActivity() {
                     }
                 } else {
                     // Populate nearest stops
-                    viewModel.distanceSearch(48.732738179977346, -122.4850819708947, 50.0)
-                    val newFrag = StopsListFragment.newInstance(viewModel)
+                    val newFrag = StopsListFragment()
                     supportFragmentManager.beginTransaction().apply {
                         replace(R.id.main_page_container, newFrag)
                         commit()

@@ -106,7 +106,7 @@ class DatabaseManagerTest {
     @ExperimentalCoroutinesApi
     fun getClosestArrivalTimesByStop() = runTest {
         repository.populateDatabase()
-        val result = db.getClosestArrivalTimesByStop(1, "18")
+        val result = db.getClosestArrivalTimesByStop(3, "12")
 
         Log.d("Testing", result.toString())
         assertTrue(result.isNotEmpty())

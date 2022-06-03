@@ -3,11 +3,11 @@
 // CSCI 412
 package com.example.onestopaway
 
-import android.provider.ContactsContract
 import android.util.Log
 import java.time.LocalTime
-import kotlin.math.abs
 import kotlin.math.ceil
+import kotlin.math.pow
+import kotlin.math.sqrt
 
 /**
  * A class that contains the data for a Stop
@@ -21,7 +21,7 @@ import kotlin.math.ceil
  */
 class Stop {
     // Constants
-    val DEGREES_TO_MILES = 69 // Nice
+    val DEGREES_TO_MILES = 69.0 // Nice
 
     // Variables
     private var _name: String = "Default Name"
@@ -89,7 +89,8 @@ class Stop {
      * @return the Manhattan distance from the given location to the stop in degrees
      */
     fun getDistance(latitude: Double, longitude: Double): Double{
-        return (abs(_latitude - latitude) + abs(_longitude - longitude)) * DEGREES_TO_MILES
+        Log.d("Distances", "($latitude, $longitude) <-> ($_latitude, $_longitude)")
+        return (sqrt((latitude - _latitude).pow(2) + (longitude - _longitude).pow(2))) * DEGREES_TO_MILES
     }
 
     /**
@@ -121,19 +122,20 @@ class Stop {
      * Gets the estimated time until the next bus arrives based on scheduled time
      * @return the estimated time until the next bus arrives at the stop in minutes
      */
-    fun updateTimeUntilNextBus(database: DatabaseManager){
-        val currentHour = LocalTime.now().hour.toString()
+    suspend fun updateTimeUntilNextBus(repository: DataRepository){
+        val currentTime = LocalTime.now()
 
-        val routesData = database.getClosestArrivalTimesByStop(_id, currentHour)
-        val routes = mutableListOf<Route>()
+            val routesData = repository.getAllTripsByStop(_id)
+
+        val routes = mutableListOf<LocalTime>()
 
         routesData.forEach {
-            routes.add(Route(it))
+            routes.add(LocalTime.parse(it))
         }
 
-        routes.sortedBy { it.arrival }
+        routes.sortedBy { it }
         if(routes.size > 0) {
-            _minutesToNextBus = routes[0].arrival.minute - LocalTime.now().minute
+            _minutesToNextBus = routes[0].minute - currentTime.minute
         }else{
             _minutesToNextBus = -1
         }

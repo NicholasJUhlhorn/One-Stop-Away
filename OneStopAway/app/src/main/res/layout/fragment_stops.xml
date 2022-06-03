@@ -46,13 +46,12 @@
     <ImageView
         android:layout_width="25dp"
         android:layout_height="25dp"
-        android:layout_marginStart="8dp"
+        android:layout_marginStart="16dp"
         android:layout_marginTop="10dp"
-        android:layout_marginEnd="8dp"
         android:src="@drawable/star_favorite_empty"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.822"
+        app:layout_constraintStart_toEndOf="@+id/next_bus_time"
         app:layout_constraintTop_toBottomOf="@+id/stop_name"
         app:layout_constraintVertical_bias="0.0" />
 

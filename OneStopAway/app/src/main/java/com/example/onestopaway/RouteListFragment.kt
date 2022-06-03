@@ -9,7 +9,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
-import com.example.onestopaway.placeholder.PlaceholderContent
 
 /**
  * A fragment representing a list of Items.
@@ -17,7 +16,7 @@ import com.example.onestopaway.placeholder.PlaceholderContent
 class RouteListFragment : Fragment() {
 
     private var columnCount = 1
-    private lateinit var _viewModel: TransitItemsViewModel
+    private val _viewModel : TransitItemsViewModel by activityViewModels {TransitItemsViewmodelFactory((requireActivity().application as OneBusAway).repository)}
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,6 +40,7 @@ class RouteListFragment : Fragment() {
                     else -> GridLayoutManager(context, columnCount)
                 }
 
+                //_viewModel.getClosestTrips(48.73280011832849, -122.48508132534693, 1.0)
                 adapter = RouteRecyclerViewAdapter(_viewModel.trips)
             }
         }
@@ -54,10 +54,9 @@ class RouteListFragment : Fragment() {
 
         // TODO: Customize parameter initialization
         @JvmStatic
-        fun newInstance(viewModel: TransitItemsViewModel) =
+        fun newInstance( data: List<Trip>) =
             RouteListFragment().apply {
                 arguments = Bundle().apply {
-                   _viewModel = viewModel
                 }
             }
     }

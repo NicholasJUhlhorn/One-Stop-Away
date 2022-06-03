@@ -3,19 +3,23 @@
 // CSCI 412
 package com.example.onestopaway
 
+import android.app.Application
 import android.content.Context
 import android.util.Log
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.time.LocalTime
 
-class TransitItemsViewModel(context: Context): ViewModel() {
+class TransitItemsViewModel(private val repository: DataRepository): ViewModel() {
 
     private var _stops = mutableListOf<Stop>()
     private var _trips = mutableListOf<Trip>()
 
-    private var _context = context
 
-    private val _databaseManager = DatabaseManager.getDatabase(context)
 
     // Getters and Setters
     val stops
@@ -35,36 +39,19 @@ class TransitItemsViewModel(context: Context): ViewModel() {
     /**
      * Populates _stops and _routes with all routes and stops
      */
-    fun populateAll(){
+    fun populateAll() = viewModelScope.launch(Dispatchers.IO){
         // Reset the stop and route list
-        _stops = mutableListOf<Stop>()
-        _trips = mutableListOf<Trip>()
-
-        // Get all stops and routes from the database
-        val stopStrings = _databaseManager.readAllStops()
-        val tripStrings = _databaseManager.readAllTrips()
-
-        Log.d("OneStopAway", "Number of Stops: ${stopStrings.size}")
-        Log.d("OneStopAway", "Number of Trips: ${tripStrings.size}")
-
-        // convert and add each stop to _stops
-        stopStrings.forEach {
-            // Make stop from row
-            _stops.add(Stop(it))
-        }
-
-        tripStrings.forEach {
-            _trips.add(Trip(it, _context))
-        }
+        _stops = repository.readAllStops().toMutableList()
+        _trips = repository.readAllTrips().toMutableList()
 
     }
 
     /**
      * A Helper function that tells all stops to update their next arrival times
      */
-    fun updateStopArrivalTimes(){
+    fun updateStopArrivalTimes() = viewModelScope.launch{
         _stops.forEach {
-            it.updateTimeUntilNextBus(_databaseManager)
+            it.updateTimeUntilNextBus(repository)
         }
     }
 
@@ -74,73 +61,62 @@ class TransitItemsViewModel(context: Context): ViewModel() {
      * @param longitude the longitude to search from
      * @param maxDistance the maximum distance a stop can be from the location in miles
      */
-    fun distanceSearch(latitude: Double, longitude: Double, maxDistance: Double) {
+    fun getClosestStops(latitude: Double, longitude: Double, maxDistance: Double) = viewModelScope.launch(Dispatchers.IO) {
         // Reset the stop and route list
-        _stops = mutableListOf<Stop>()
-        _trips = mutableListOf<Trip>()
+        val stops = repository.readAllStops()
+
 
         // Get all stops and routes from the database
-        val stopStrings = _databaseManager.readAllStops()
-        val routeStrings = _databaseManager.readAllTrips()
 
         // convert and add each stop to _stops
-        stopStrings.forEach {
+        stops.forEach { currStop ->
             // Make stop from row
-            val newStop = Stop(it)
 
             // If the stop is in range add it to the list
-            if(newStop.getDistance(latitude, longitude) <= maxDistance){
-                _stops.add(newStop)
+            if(currStop.getDistance(latitude, longitude) <= maxDistance){
+                _stops.add(currStop)
             }
         }
 
-        routeStrings.forEach {
-            // Make new route from row
-            val newTrip = Trip(it, _context)
+        Log.d("OneStopAway", "Distance ($maxDistance) Stops: ${_stops.size}")
+        Log.d("OneStopAway", "Distance ($maxDistance) Trips: ${_trips.size}")
 
+    }
+
+    fun getClosestTrips(latitude: Double, longitude: Double, maxDistance: Double) = viewModelScope.launch(Dispatchers.Main) {
+        val trips = repository.readAllTrips()
+
+        trips.forEach { newTrip ->
             // If the route has one of the stops listed then add it
             // NOTE: This might be costly...
             var added: Boolean = false
             for (tripStop in newTrip.stops) {
-                for (stop in _stops){
-                    if(stop.compareStop(tripStop)){
+                for (stop in _stops) {
+                    if (stop.compareStop(tripStop)) {
                         _trips.add(newTrip)
                         added = true
                     }
-                    if(added){
+                    if (added) {
                         break
                     }
                 }
-                if(added){
+                if (added) {
                     break
                 }
             }
         }
-
+    }
+    fun populateDatabase() = viewModelScope.launch(Dispatchers.IO) {
+        repository.populateDatabase()
     }
 
     /**
      * Populates _stops and _routes based on the stops and routes that are favorites
      */
-    fun populateFavorites(){
+    fun populateFavorites() = viewModelScope.launch(Dispatchers.IO){
         // Reset the stop and route list
-        _stops = mutableListOf<Stop>()
-        _trips = mutableListOf<Trip>()
-
-        // Get all stops and routes from the database
-        val stopStrings = _databaseManager.getFavoriteStops()
-        val routeStrings = _databaseManager.getFavoriteTrips()
-
-        // convert and add each stop to _stops
-        stopStrings.forEach {
-            // Make stop from row
-            _stops.add(Stop(it))
-        }
-
-        routeStrings.forEach {
-            // Make new route from row
-            _trips.add(Trip(it, _context))
-        }
+        _stops = repository.getFavoriteStops() as MutableList<Stop>
+        _trips = repository.getFavoriteTrips() as MutableList<Trip>
     }
 
     /**
@@ -153,4 +129,14 @@ class TransitItemsViewModel(context: Context): ViewModel() {
         _trips = trips
     }
 
+}
+
+class TransitItemsViewmodelFactory(private val repository: DataRepository) : ViewModelProvider.Factory {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        if (modelClass.isAssignableFrom(TransitItemsViewModel::class.java)) {
+            @Suppress("UNCHECKED_CAST")
+            return TransitItemsViewModel(repository) as T
+        }
+        throw IllegalArgumentException("Unknown ViewModel class")
+    }
 }

@@ -99,7 +99,7 @@ class DatabaseManager(context: Context) : SQLiteOpenHelper(context, "database", 
             row.add(cursor.getString(1))
             row.add(cursor.getString(2))
             row.add(cursor.getString(3))
-            row.add(cursor.getInt(4).toString())
+            row.add(cursor.getString(4))
             row.add(cursor.getString(5))
 
             result.add(row)
@@ -190,7 +190,7 @@ class DatabaseManager(context: Context) : SQLiteOpenHelper(context, "database", 
     fun getStopsOnRoute(id: Int): List<List<String>>{
         val result = mutableListOf<List<String>>()
         val param = Array<String>(1){id.toString()}
-        val cursor = writableDatabase.rawQuery( "SELECT STOP.name FROM STOP INNER JOIN ROUTE ON STOP.stop_id = ROUTE.stop_id WHERE ROUTE.stop_id = ?",
+        val cursor = writableDatabase.rawQuery( "SELECT ${STOP_TABLE_NAME}.${Stop.NAME_COL} FROM $STOP_TABLE_NAME INNER JOIN $ROUTE_TABLE_NAME ON $STOP_TABLE_NAME.${Stop.ID_COL} = ROUTE.stop_id WHERE ROUTE.stop_id = ?",
             param)
 
         while(cursor.moveToNext()){
@@ -237,20 +237,13 @@ class DatabaseManager(context: Context) : SQLiteOpenHelper(context, "database", 
         return result
     }
 
-    fun getClosestArrivalTimesByStop(id: Int, hour: String): List<List<String>> {
-        val result = mutableListOf<List<String>>()
-        val hourwildcard = "$hour:%"
-        val cursor = writableDatabase.rawQuery("SELECT * FROM $ROUTE_TABLE_NAME WHERE ${Stop.ID_COL} = $id AND ${Route.ARRIVAL_TIME_COL} LIKE '$hourwildcard'", null)
+    fun getArrivalTimesByStop(id: Int): List<String> {
+        val result = mutableListOf<String>()
+        val cursor = writableDatabase.rawQuery("SELECT $ROUTE_TABLE_NAME.${Route.ARRIVAL_TIME_COL} FROM $ROUTE_TABLE_NAME WHERE ${Stop.ID_COL} = $id AND ${Route.ARRIVAL_TIME_COL}", null)
 
         while(cursor.moveToNext()){
-            val row = mutableListOf<String>()
 
-            row.add(cursor.getInt(0).toString())
-            row.add(cursor.getInt(1).toString())
-            row.add(cursor.getString(2))
-            row.add(cursor.getString(3))
-
-            result.add(row)
+            result.add(cursor.getString(0))
         }
         cursor.close()
 
