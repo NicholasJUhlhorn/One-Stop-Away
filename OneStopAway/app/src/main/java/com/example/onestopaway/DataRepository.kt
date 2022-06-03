@@ -57,7 +57,7 @@ class DataRepository(private val database :DatabaseManager) {
             numStopsFetched += 1
 
             obj = arrayStop.getJSONObject(i)
-            database.insertStop(obj.getInt("id"), obj.getInt("stopNum"), obj.getString("name"), obj.getString("latitude"), obj.getString("longitude"), 0)
+            database.insertStop(obj.getInt("id"), obj.getInt("stopNum"), obj.getString("name"), obj.getString("latitutde"), obj.getString("longitude"), 0)
         }
         database.close()
     }
