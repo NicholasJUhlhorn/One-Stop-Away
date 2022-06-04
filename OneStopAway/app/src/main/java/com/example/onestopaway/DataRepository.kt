@@ -11,8 +11,8 @@ import java.util.*
 
 class DataRepository(private val database :DatabaseManager) {
 
-    //val STOPURL = "https://raw.githubusercontent.com/whatcomtrans/publicwtadata/master/GTFS/wta_gtfs_latest/stops.txt"
-    val STOPURL = "https://api.ridewta.com/stops"
+    val STOPURLCSV = "https://raw.githubusercontent.com/whatcomtrans/publicwtadata/master/GTFS/wta_gtfs_latest/stops.txt"
+    val STOPURLAPI = "https://api.ridewta.com/stops/"
     val TRIPURL = "https://raw.githubusercontent.com/whatcomtrans/publicwtadata/master/GTFS/wta_gtfs_latest/trips.txt"
     val ROUTEURL = "https://raw.githubusercontent.com/whatcomtrans/publicwtadata/master/GTFS/wta_gtfs_latest/stop_times.txt"
     // keep track of fetched data for testing
@@ -28,8 +28,8 @@ class DataRepository(private val database :DatabaseManager) {
         }
     }
 
-    /*suspend fun populateStops() {
-        val Surl = URL(STOPURL)
+    suspend fun populateStops() {
+        val Surl = URL(STOPURLCSV)
         val scn = Scanner(Surl.openStream())
 
         var Line: String
@@ -39,25 +39,16 @@ class DataRepository(private val database :DatabaseManager) {
         while(scn.hasNextLine()){
             Line = scn.nextLine()
             Split = Line.split(",")
+
+            val stop = STOPURLAPI + Split[2]
+            val Aurl = URL(stop)
+            val content = Aurl.readText()
+            var arrayStop = JSONArray(content)
+            var obj = arrayStop.getJSONObject(0)
             numStopsFetched += 1
 
-            database.insertStop(Split[0].toInt(), Split[1].toInt(), Split[2], Split[4], Split[5], 0)
+            database.insertStop(Split[10].split("_")[0].toInt(), Split[2].toInt(), Split[8], obj.getString("latitutde"), obj.getString("Longitude"), 0)
 
-        }
-        database.close()
-    }*/
-
-    suspend fun populateStops() {
-        val Surl = URL(STOPURL)
-        val content = Surl.readText()
-
-        var arrayStop = JSONArray(content)
-        var obj: JSONObject
-        for(i in 0..(arrayStop.length() - 1)){
-            numStopsFetched += 1
-
-            obj = arrayStop.getJSONObject(i)
-            database.insertStop(obj.getInt("id"), obj.getInt("stopNum"), obj.getString("name"), obj.getString("latitutde"), obj.getString("longitude"), 0)
         }
         database.close()
     }
@@ -97,7 +88,7 @@ class DataRepository(private val database :DatabaseManager) {
             split = line.split(",")
             numRoutesFetched += 1
 
-            database.insertRoute(split[0], split[1], split[2], split[3].toInt())
+            database.insertRoute(split[0], split[1], split[2], split[3].split("_")[0].toInt())
 
         }
         database.close()

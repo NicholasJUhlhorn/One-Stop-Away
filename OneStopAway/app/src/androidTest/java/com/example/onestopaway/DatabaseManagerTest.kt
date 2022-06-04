@@ -78,7 +78,7 @@ class DatabaseManagerTest {
         repository.populateStops()
         val test = db.getStopID("Bakerview Rd at Fred Meyer")
 
-        assertEquals(test, 585)
+        assertEquals(test, 4)
     }
 
     @Test
