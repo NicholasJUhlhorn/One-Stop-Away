@@ -47,7 +47,7 @@ class DataRepository(private val database :DatabaseManager) {
             var obj = arrayStop.getJSONObject(0)
             numStopsFetched += 1
 
-            database.insertStop(Split[10].split("_")[0].toInt(), Split[2].toInt(), Split[8], obj.getString("latitutde"), obj.getString("Longitude"), 0)
+            database.insertStop(Split[10].split("_")[0].toInt(), Split[2].toInt(), Split[8], obj.getString("latitutde"), obj.getString("longitude"), 0)
 
         }
         database.close()
