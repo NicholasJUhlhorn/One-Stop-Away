@@ -60,7 +60,7 @@ class DatabaseManagerTest {
         repository.populateDatabase()
         val test = db.getRouteID("331 Cordata/WCC")
 
-        assertEquals(test, 1171010)
+        assertEquals(test, 2028020)
     }
 
     @Test
@@ -86,9 +86,9 @@ class DatabaseManagerTest {
     fun correctTimes() = runTest {
         repository.populateStops()
         repository.populateRoutes()
-        val test = db.getArrivalTimeOnStop(2070)
+        val test = db.getArrivalTimeOnStop(153)
 
-        assertEquals(test[0][0], "07:43:28")
+        assertEquals(test[0][0], "16:08:00")
     }
 
     @Test
