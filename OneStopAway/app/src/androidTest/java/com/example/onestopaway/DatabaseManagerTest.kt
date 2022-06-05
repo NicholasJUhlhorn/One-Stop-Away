@@ -17,34 +17,37 @@ class DatabaseManagerTest {
 
 
     @Before
-    @ExperimentalCoroutinesApi
     fun setUp() {
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
         db = DatabaseManager.getDatabase(appContext)
         db.clearDBAndRecreate()
         repository = DataRepository(db)
-        runTest {
-            repository.populateDatabase()
-        }
+
+        repository.populateRoutes()
+        repository.populateStops()
+        repository.populateTrips()
     }
 
     @Test
-    fun  stopsAreAdded()  {
+    @ExperimentalCoroutinesApi
+    fun  stopsAreAdded() = runTest {
 
         assertTrue(repository.numStopsFetched > 1)
-        assertEquals(db.readAllStops().size, repository.numStopsFetched)
+        assertEquals(repository.readAllStops().size, repository.numStopsFetched)
 
     }
 
     @Test
-    fun tripsAreAdded()  {
+    @ExperimentalCoroutinesApi
+    fun tripsAreAdded() = runTest  {
         assertTrue(repository.numTripsFetched > 1)
-        assertEquals(db.readAllTrips().size, repository.numTripsFetched)
+        assertEquals(repository.readAllTrips().size, repository.numTripsFetched)
 
     }
 
     @Test
-    fun routesAreAdded() {
+    @ExperimentalCoroutinesApi
+    fun routesAreAdded() = runTest {
         assertTrue(repository.numRoutesFetched > 1)
         assertEquals(db.readAllRoutes().size, repository.numRoutesFetched)
 
@@ -86,7 +89,7 @@ class DatabaseManagerTest {
     @Test
     @ExperimentalCoroutinesApi
     fun favoriteTrips() {
-        db.insertTrip("44444", "334 Test/Trip",1)
+        db.insertTrip(44444, "334 Test/Trip",1)
 
         val result = db.getFavoriteTrips()
 

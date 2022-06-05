@@ -65,7 +65,7 @@ class DatabaseManager(context: Context) : SQLiteOpenHelper(context, "database", 
 
     }
 
-    fun insertTrip(id: String, head: String, fav: Int){
+    fun insertTrip(id: Int, head: String, fav: Int){
         val values = ContentValues()
         values.put(Trip.NAME_COL, head)
         values.put(Trip.TRIP_ID_COL, id)
@@ -75,7 +75,7 @@ class DatabaseManager(context: Context) : SQLiteOpenHelper(context, "database", 
 
     }
 
-    fun insertRoute(id: String, at: String, dt: String, stop: Int){
+    fun insertRoute(id: Int, at: String, dt: String, stop: Int){
         val values = ContentValues()
         values.put(Route.ROUTE_ID_COL, id)
         values.put(Route.ARRIVAL_TIME_COL, at)

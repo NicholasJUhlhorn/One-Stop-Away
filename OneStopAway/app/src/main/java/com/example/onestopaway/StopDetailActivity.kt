@@ -24,7 +24,9 @@ class StopDetailActivity : AppCompatActivity(), OnMapReadyCallback {
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
+
         super.onCreate(savedInstanceState)
+        //get stop and current location from intent
         stop = intent.getSerializableExtra("passed_stop") as Stop
         currentLat = intent.getDoubleExtra("currentLat", currentLat)
         currentLong = intent.getDoubleExtra("currentLong", currentLong)
@@ -51,13 +53,14 @@ class StopDetailActivity : AppCompatActivity(), OnMapReadyCallback {
      */
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
-        // Add a marker in Sydney and move the camera
+        // Add a marker for the current location and the stop
         val stopLocation = LatLng(stop.latitude, stop.longitude)
         mMap.addMarker(MarkerOptions().position(stopLocation).title(stop.name))
         mMap.addMarker(MarkerOptions().icon(BitmapDescriptorFactory
             .defaultMarker(BitmapDescriptorFactory.HUE_AZURE)).title("Current Location").position(
             LatLng(currentLat,currentLong)
         ))
+        // move the camera to the location and zoom it
         mMap.moveCamera(CameraUpdateFactory.zoomTo(15f))
         mMap.moveCamera(CameraUpdateFactory.newLatLng(stopLocation))
 

@@ -31,14 +31,13 @@ class StopsListFragment : Fragment() {
     private var currentLocation: LatLng = LatLng(48.73280011832849, -122.48508132534693)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if(context is MainActivity) {
+        // if fragment was launched from the main activity, populate with closest stops
+        // if from detail fragment, filter by favorites
+        if(activity is MainActivity && parentFragment == null) {
             viewModel.getClosestStops(currentLocation.latitude, currentLocation.longitude, 1.0)
-            viewModel.updateStopArrivalTimes()
-        } else {
+        } else if(parentFragment is FavoritesFragment){
             viewModel.populateFavorites()
         }
-
-        Log.i("OneStopAway", "Size of stops " + viewModel.stops.size.toString())
     }
 
     override fun onAttach(context: Context) {
