@@ -158,21 +158,6 @@ class DatabaseManager(context: Context) : SQLiteOpenHelper(context, "database", 
         return id
     }
 
-    //Gets arrival times based on stop id
-    fun getArrivalTimeOnStop(stop_id: Int): List<String>{
-        val result = mutableListOf<String>()
-        val param = Array<String>(1){stop_id.toString()}
-
-        val cursor = writableDatabase.rawQuery("SELECT $ROUTE_TABLE_NAME.arrival_time FROM $STOP_TABLE_NAME INNER JOIN $ROUTE_TABLE_NAME ON $STOP_TABLE_NAME.id = $ROUTE_TABLE_NAME.stop_id WHERE $STOP_TABLE_NAME.${Stop.ID_COL} = ?",
-            param)
-
-        while(cursor.moveToNext()){
-            result.add(cursor.getString(0))
-        }
-        cursor.close()
-        return result
-    }
-
     //Returns route id based on route name
     fun getRouteID(name: String): Int{
         val id: Int
@@ -190,7 +175,9 @@ class DatabaseManager(context: Context) : SQLiteOpenHelper(context, "database", 
     fun getStopsOnRoute(id: Int): List<List<String>>{
         val result = mutableListOf<List<String>>()
         val param = Array<String>(1){id.toString()}
-        val cursor = writableDatabase.rawQuery( "SELECT ${STOP_TABLE_NAME}.${Stop.NAME_COL} FROM $STOP_TABLE_NAME INNER JOIN $ROUTE_TABLE_NAME ON $STOP_TABLE_NAME.${Stop.ID_COL} = ROUTE.stop_id WHERE ROUTE.stop_id = ?",
+
+        val cursor = writableDatabase.rawQuery(
+            "SELECT ${STOP_TABLE_NAME}.${Stop.NAME_COL} FROM $STOP_TABLE_NAME INNER JOIN $ROUTE_TABLE_NAME ON $STOP_TABLE_NAME.${Stop.ID_COL} = ${ROUTE_TABLE_NAME}.${Stop.ID_COL} WHERE ${ROUTE_TABLE_NAME}.${Stop.ID_COL} = ?",
             param)
 
         while(cursor.moveToNext()){
@@ -219,6 +206,7 @@ class DatabaseManager(context: Context) : SQLiteOpenHelper(context, "database", 
         return result
     }
 
+    //get all favorited trips
     fun getFavoriteTrips(): List<List<String>> {
         val result = mutableListOf<List<String>>()
 
@@ -237,9 +225,11 @@ class DatabaseManager(context: Context) : SQLiteOpenHelper(context, "database", 
         return result
     }
 
+    //get all arrival times for a single stop
     fun getArrivalTimesByStop(id: Int): List<String> {
         val result = mutableListOf<String>()
-        val cursor = writableDatabase.rawQuery("SELECT $ROUTE_TABLE_NAME.${Route.ARRIVAL_TIME_COL} FROM $ROUTE_TABLE_NAME WHERE ${Stop.ID_COL} = $id AND ${Route.ARRIVAL_TIME_COL}", null)
+        val param = Array<String>(1){id.toString()}
+        val cursor = writableDatabase.rawQuery("SELECT $ROUTE_TABLE_NAME.${Route.ARRIVAL_TIME_COL} FROM $ROUTE_TABLE_NAME WHERE ${Stop.ID_COL} = ?", param)
 
         while(cursor.moveToNext()){
 
