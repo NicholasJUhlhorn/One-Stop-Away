@@ -1,13 +1,20 @@
 package com.example.onestopaway
 
+import android.Manifest.permission.ACCESS_COARSE_LOCATION
+import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.content.Intent
+import android.content.pm.PackageManager.PERMISSION_GRANTED
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.PersistableBundle
 import android.util.Log
 import android.view.MenuItem
 import androidx.activity.viewModels
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat.checkSelfPermission
 import com.example.onestopaway.databinding.ActivityMainBinding
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
@@ -16,6 +23,7 @@ class MainActivity : AppCompatActivity(), StopListener {
     private var _binding : ActivityMainBinding? = null
     private val viewModel : TransitItemsViewModel by viewModels { TransitItemsViewmodelFactory((application as OneBusAway).repository)}
     private val binding get() = _binding!!
+    private var currentLoc: LatLng = LatLng(48.73280011832849,-122.48508132534693)
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -43,7 +51,7 @@ class MainActivity : AppCompatActivity(), StopListener {
             when(itemid) {
                 R.id.routes -> {
                         // Populate nearest routes
-                        val newFrag = RouteListFragment()
+                        val newFrag = RouteListFragment.newInstance(this)
                         supportFragmentManager.beginTransaction().apply {
                             replace(R.id.main_page_container, newFrag)
                             commit()
@@ -57,7 +65,7 @@ class MainActivity : AppCompatActivity(), StopListener {
                         }
                 }
                 R.id.stops -> {
-                        val newFrag = StopsListFragment.newInstance(this)
+                        val newFrag = StopsListFragment.newInstance(this, currentLoc)
                         supportFragmentManager.beginTransaction().apply {
                             replace(R.id.main_page_container, newFrag)
                             commit()
@@ -66,6 +74,9 @@ class MainActivity : AppCompatActivity(), StopListener {
                 }
             }
         }
+        getLocation()
+
+
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -87,7 +98,7 @@ class MainActivity : AppCompatActivity(), StopListener {
                         }
                     } else {
                         // Populate nearest routes
-                        val newFrag = RouteListFragment()
+                        val newFrag = RouteListFragment.newInstance(this)
                         supportFragmentManager.beginTransaction().apply {
                             replace(R.id.main_page_container, newFrag)
                             commit()
@@ -106,7 +117,7 @@ class MainActivity : AppCompatActivity(), StopListener {
                 } else {
                     // Populate ViewModel with favorites
 
-                    val newFrag = FavoritesFragment.newInstance(this)
+                    val newFrag = FavoritesFragment.newInstance(this, currentLoc)
                     supportFragmentManager.beginTransaction().apply {
                         replace(R.id.main_page_container, newFrag)
                         commit()
@@ -126,7 +137,7 @@ class MainActivity : AppCompatActivity(), StopListener {
                     }
                 } else {
                     // Populate nearest stops
-                    val newFrag = StopsListFragment.newInstance(this)
+                    val newFrag = StopsListFragment.newInstance(this, currentLoc)
                     supportFragmentManager.beginTransaction().apply {
                         replace(R.id.main_page_container, newFrag)
                         commit()
@@ -139,13 +150,40 @@ class MainActivity : AppCompatActivity(), StopListener {
         }
     }
 
+fun getLocation(): LatLng {
+    val client = LocationServices.getFusedLocationProviderClient(this)
+    var location : LatLng?
+    if(checkSelfPermission(ACCESS_FINE_LOCATION) != PERMISSION_GRANTED ||
+        checkSelfPermission(ACCESS_FINE_LOCATION) != PERMISSION_GRANTED) {
+        ActivityCompat.requestPermissions(this, arrayOf(ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION), 1)
+    } else {
+        client.lastLocation.addOnSuccessListener {
+                currentLoc = LatLng(it.latitude, it.longitude)
+                Log.d("LOC", currentLoc.toString())
+        }
+    }
+    return currentLoc
+}
+
+override fun onRequestPermissionsResult(
+    requestCode: Int,
+    permissions: Array<out String>,
+    grantResults: IntArray
+) {
+    super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+    if(requestCode == 1) {
+        getLocation()
+    }
+}
+
     override fun onStopClicked(stop: Stop) {
         Intent(this, StopDetailActivity::class.java).apply {
-            this.putExtra("stop_lat", stop.latitude)
-            this.putExtra("stop_long", stop.longitude)
-            this.putExtra("stop_name", stop.name)
-            this.putExtra("stop_id", stop.id)
+            this.putExtra("passed_stop", stop)
+            getLocation()
+            this.putExtra("currentLat", currentLoc.latitude)
+            this.putExtra("currentLong", currentLoc.longitude)
             startActivity(this)
+
         }
     }
 

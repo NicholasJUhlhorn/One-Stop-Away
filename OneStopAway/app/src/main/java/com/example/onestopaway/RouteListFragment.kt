@@ -18,11 +18,15 @@ class RouteListFragment : Fragment() {
     private var columnCount = 1
     private val viewModel : TransitItemsViewModel by activityViewModels {
         TransitItemsViewmodelFactory((requireActivity().application as OneBusAway).repository)}
+    private lateinit var trips : List<Trip>
+    private lateinit var listener : StopListener
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        viewModel.getClosestTrips(48.73280011832849, -122.48508132534693, 1.0)
+        viewModel.populateTrips()
+        trips = viewModel.trips
+
     }
 
     override fun onCreateView(
@@ -39,7 +43,7 @@ class RouteListFragment : Fragment() {
                     else -> GridLayoutManager(context, columnCount)
                 }
 
-                adapter = RouteRecyclerViewAdapter(viewModel.trips)
+                adapter = RouteRecyclerViewAdapter(trips)
             }
         }
         return view
@@ -52,10 +56,9 @@ class RouteListFragment : Fragment() {
 
         // TODO: Customize parameter initialization
         @JvmStatic
-        fun newInstance() =
+        fun newInstance(lr : StopListener) =
             RouteListFragment().apply {
-                arguments = Bundle().apply {
-                }
+                listener = lr
             }
     }
 }

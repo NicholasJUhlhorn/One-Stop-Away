@@ -49,6 +49,7 @@ dependencies {
     implementation 'androidx.recyclerview:recyclerview:1.2.1'
     implementation 'com.google.android.gms:play-services-maps:18.0.2'
     implementation "androidx.fragment:fragment-ktx:1.4.1"
+    implementation 'com.google.android.gms:play-services-location:19.0.1'
 
 
     testImplementation "androidx.test:core:1.4.0"

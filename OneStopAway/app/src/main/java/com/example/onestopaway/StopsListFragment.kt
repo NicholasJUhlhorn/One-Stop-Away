@@ -16,6 +16,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModel
 import com.example.onestopaway.placeholder.PlaceholderContent
+import com.google.android.gms.maps.model.LatLng
 
 /**
  * A fragment representing a list of Items.
@@ -27,11 +28,12 @@ class StopsListFragment : Fragment() {
     private var stops : List<Stop> = listOf()
     private lateinit var recyclerAdapter : StopRecyclerViewAdapter
     private val viewModel: TransitItemsViewModel by activityViewModels {TransitItemsViewmodelFactory((requireActivity().application as OneBusAway).repository)}
-
+    private var currentLocation: LatLng = LatLng(48.73280011832849, -122.48508132534693)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if(context is MainActivity) {
-            viewModel.getClosestStops(48.73280011832849, -122.48508132534693, 1.0)
+            viewModel.getClosestStops(currentLocation.latitude, currentLocation.longitude, 1.0)
+            viewModel.updateStopArrivalTimes()
         } else {
             viewModel.populateFavorites()
         }
@@ -40,6 +42,10 @@ class StopsListFragment : Fragment() {
     }
 
     override fun onAttach(context: Context) {
+        if(context is MainActivity) {
+            listener = context
+            currentLocation = context.getLocation()
+        }
         super.onAttach(context)
     }
 
@@ -51,7 +57,7 @@ class StopsListFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_stops_list, container, false)
-        recyclerAdapter = StopRecyclerViewAdapter(viewModel.stops)
+        recyclerAdapter = StopRecyclerViewAdapter(viewModel.stops, listener)
 
 
         // Set the adapter
@@ -67,9 +73,10 @@ class StopsListFragment : Fragment() {
     companion object {
 
         @JvmStatic
-        fun newInstance(lr: StopListener) =
+        fun newInstance(lr: StopListener, location: LatLng) =
             StopsListFragment().apply {
                 listener = lr
+                currentLocation = location
             }
     }
 }

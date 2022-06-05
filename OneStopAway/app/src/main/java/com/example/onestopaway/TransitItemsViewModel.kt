@@ -11,6 +11,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
 import java.time.LocalTime
 
@@ -49,12 +50,17 @@ class TransitItemsViewModel(private val repository: DataRepository): ViewModel()
 
     }
 
+    fun populateTrips() = viewModelScope.launch{
+        _trips = repository.readAllTrips().toMutableList()
+    }
+
     /**
      * A Helper function that tells all stops to update their next arrival times
      */
-    fun updateStopArrivalTimes() = viewModelScope.launch{
+    fun updateStopArrivalTimes() = viewModelScope.launch {
         _stops.forEach {
-            it.updateTimeUntilNextBus(repository)
+            val times : List<String> = repository.getAllTripsByStop(it.id)
+            it.updateTimeUntilNextBus(times)
         }
     }
 
@@ -80,10 +86,10 @@ class TransitItemsViewModel(private val repository: DataRepository): ViewModel()
             if(currStop.getDistance(latitude, longitude) <= maxDistance){
                 _stops.add(currStop)
             }
+
         }
 
         Log.d("OneStopAway", "Distance ($maxDistance) Stops: ${_stops.size}")
-        Log.d("OneStopAway", "Distance ($maxDistance) Trips: ${_trips.size}")
 
     }
 

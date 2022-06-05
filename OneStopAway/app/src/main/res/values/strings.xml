@@ -7,4 +7,7 @@
     <string name="stops">Stops</string>
     <string name="favorites">Favorites</string>
     <string name="routes">Routes</string>
+    <string name="stop_name">"Stop Name: %1$s"</string>
+    <string name="stop_number">"Stop number: %1$d"</string>
+    <string name="next_bus_at">"Next Bus at: %1$d"</string>
 </resources>

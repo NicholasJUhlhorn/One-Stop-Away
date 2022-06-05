@@ -12,10 +12,10 @@ import java.util.*
 class DataRepository(private val database :DatabaseManager) {
 
 
-    val STOPURLCSV = "https://raw.githubusercontent.com/whatcomtrans/publicwtadata/master/GTFS/wta_gtfs_latest/stops.txt"
+    val STOPURLCSV = "https://raw.githubusercontent.com/whatcomtrans/publicwtadata/9ce88a02297d7598496ebbf80fd42abf7164037d/GTFS/wta_gtfs_latest/stops.txt"
     val STOPURLAPI = "https://api.ridewta.com/stops/"
-    val TRIPURL = "https://raw.githubusercontent.com/whatcomtrans/publicwtadata/master/GTFS/wta_gtfs_latest/trips.txt"
-    val ROUTEURL = "https://raw.githubusercontent.com/whatcomtrans/publicwtadata/master/GTFS/wta_gtfs_latest/stop_times.txt"
+    val TRIPURL = "https://raw.githubusercontent.com/whatcomtrans/publicwtadata/9ce88a02297d7598496ebbf80fd42abf7164037d/GTFS/wta_gtfs_latest/trips.txt"
+    val ROUTEURL = "https://raw.githubusercontent.com/whatcomtrans/publicwtadata/9ce88a02297d7598496ebbf80fd42abf7164037d/GTFS/wta_gtfs_latest/stop_times.txt"
     // keep track of fetched data for testing
     var numRoutesFetched = 0
     var numStopsFetched = 0
@@ -40,16 +40,23 @@ class DataRepository(private val database :DatabaseManager) {
         while(scn.hasNextLine()){
             Line = scn.nextLine()
             Split = Line.split(",")
-
-            val stop = STOPURLAPI + Split[2]
+            val stop = STOPURLAPI + Split[1]
             val Aurl = URL(stop)
             val content = Aurl.readText()
-            var arrayStop = JSONArray(content)
-            var obj = arrayStop.getJSONObject(0)
-            numStopsFetched += 1
+            if(content.length > 2) {
+                var arrayStop = JSONArray(content)
+                var obj = arrayStop.getJSONObject(0)
+                numStopsFetched += 1
 
-            database.insertStop(Split[10].split("_")[0].toInt(), Split[2].toInt(), Split[8], obj.getString("latitutde"), obj.getString("longitude"), 0)
-
+                database.insertStop(
+                    Split[0].toInt(),
+                    Split[1].toInt(),
+                    Split[2],
+                    obj.getString("latitutde"),
+                    obj.getString("longitude"),
+                    0
+                )
+            }
         }
         database.close()
     }
@@ -87,13 +94,8 @@ class DataRepository(private val database :DatabaseManager) {
             line = scanner.nextLine()
             split = line.split(",")
             numRoutesFetched += 1
-            //handle edge case with stop_id merged
-            if(split[3].contains('_')) {
-                val stop_id_string = split[3].split('_')
-                database.insertRoute(split[0], split[1], split[2], stop_id_string[0].toInt())
-            } else {
-                database.insertRoute(split[0], split[1], split[2], split[3].toInt())
-            }
+
+            database.insertRoute(split[0], split[1], split[2], split[3].toInt())
         }
         database.close()
     }

@@ -4,6 +4,7 @@
 package com.example.onestopaway
 
 import android.util.Log
+import java.io.Serializable
 import java.time.LocalTime
 import kotlin.math.ceil
 import kotlin.math.pow
@@ -19,7 +20,7 @@ import kotlin.math.sqrt
  * @param isFavorite 1 if the stop is favorited 0 otherwise
  * @constructor Creates a stop based on the given id, number, name, latitude, and longitude
  */
-class Stop {
+class Stop: Serializable {
     // Constants
     val DEGREES_TO_MILES = 69.0 // Nice
 
@@ -121,20 +122,15 @@ class Stop {
      * Gets the estimated time until the next bus arrives based on scheduled time
      * @return the estimated time until the next bus arrives at the stop in minutes
      */
-    suspend fun updateTimeUntilNextBus(repository: DataRepository){
+    suspend fun updateTimeUntilNextBus(timeData : List<String>){
         val currentTime = LocalTime.now()
-
-            val routesData = repository.getAllTripsByStop(_id)
-
-        val routes = mutableListOf<LocalTime>()
-
-        routesData.forEach {
-            routes.add(LocalTime.parse(it))
+        val times = mutableListOf<LocalTime>()
+        timeData.forEach {
+            times.add(LocalTime.parse(it))
         }
-
-        routes.sortedBy { it }
-        if(routes.size > 0) {
-            _minutesToNextBus = routes[0].minute - currentTime.minute
+        times.sortedBy { it }
+        if(times.size > 0) {
+            _minutesToNextBus = times[0].minute - currentTime.minute
         }else{
             _minutesToNextBus = -1
         }
