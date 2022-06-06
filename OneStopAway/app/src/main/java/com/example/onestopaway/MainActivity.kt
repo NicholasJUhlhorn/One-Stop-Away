@@ -43,7 +43,7 @@ class MainActivity : AppCompatActivity(), StopListener {
             (application as OneBusAway).repository.populateDatabase()
         }
         if(savedInstanceState == null) {
-            val route = RouteListFragment()
+            val route = RouteListFragment.newInstance(this)
             supportFragmentManager.beginTransaction().apply {
                 replace(R.id.main_page_container, route)
                 commit()
@@ -189,6 +189,10 @@ override fun onRequestPermissionsResult(
             startActivity(this)
 
         }
+    }
+
+    override fun onStopFavorited(stop: Stop) {
+        TODO("Not yet implemented")
     }
 
 }
