@@ -16,6 +16,8 @@ import com.example.onestopaway.databinding.ActivityMainBinding
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity(), StopListener {
@@ -37,8 +39,10 @@ class MainActivity : AppCompatActivity(), StopListener {
         binding.menuBar.setOnItemSelectedListener {
             onOptionsItemSelected(it)
         }
+        GlobalScope.launch {
+            (application as OneBusAway).repository.populateDatabase()
+        }
         if(savedInstanceState == null) {
-            viewModel.populateDatabase()
             val route = RouteListFragment()
             supportFragmentManager.beginTransaction().apply {
                 replace(R.id.main_page_container, route)
