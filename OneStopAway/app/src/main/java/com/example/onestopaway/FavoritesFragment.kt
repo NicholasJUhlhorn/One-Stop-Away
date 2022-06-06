@@ -11,6 +11,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.commit
 import com.example.onestopaway.databinding.ActivityMainBinding
 import com.example.onestopaway.databinding.FragmentFavoritesBinding
+import com.google.android.gms.maps.model.LatLng
 import com.google.android.material.tabs.TabLayout
 
 // TODO: Rename parameter arguments, choose names that match
@@ -27,18 +28,19 @@ class FavoritesFragment : Fragment(), TabLayout.OnTabSelectedListener {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
-
+    private lateinit var listener: StopListener
     private var _binding : FragmentFavoritesBinding? = null
     private val binding get() = _binding!!
-    private lateinit var _viewModel : TransitItemsViewModel
-
+    private val viewModel : TransitItemsViewModel by activityViewModels {TransitItemsViewmodelFactory((requireActivity().application as OneBusAway).repository)}
+    private var currentLocation: LatLng = LatLng(48.73280011832849, -122.48508132534693)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
             param1 = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
         }
-        val initialFragment : StopsListFragment = StopsListFragment.newInstance(_viewModel)
+
+        val initialFragment : StopsListFragment = StopsListFragment.newInstance(listener, currentLocation)
         childFragmentManager.beginTransaction().apply {
             replace(R.id.favorites_container, initialFragment)
             commit()
@@ -67,9 +69,10 @@ class FavoritesFragment : Fragment(), TabLayout.OnTabSelectedListener {
          */
         // TODO: Rename and change types and number of parameters
         @JvmStatic
-        fun newInstance(viewModel: TransitItemsViewModel) =
+        fun newInstance(lr: StopListener, loc: LatLng) =
             FavoritesFragment().apply {
-                _viewModel = viewModel
+                listener = lr
+                currentLocation = loc
             }
     }
 
@@ -83,7 +86,8 @@ class FavoritesFragment : Fragment(), TabLayout.OnTabSelectedListener {
                         commit()
                     }
                 } else {
-                    val newFrag = StopsListFragment.newInstance(_viewModel)
+
+                    val newFrag = StopsListFragment.newInstance(listener, currentLocation)
                     childFragmentManager.beginTransaction().apply {
                         replace(R.id.favorites_container, newFrag)
                         commit()
@@ -99,7 +103,7 @@ class FavoritesFragment : Fragment(), TabLayout.OnTabSelectedListener {
                             commit()
                         }
                     } else {
-                        val newFrag = RouteListFragment.newInstance(_viewModel)
+                        val newFrag = RouteListFragment()
                         childFragmentManager.beginTransaction().apply {
                             replace(R.id.favorites_container, newFrag)
                             commit()

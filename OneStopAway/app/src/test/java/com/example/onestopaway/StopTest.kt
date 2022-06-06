@@ -10,9 +10,9 @@ class StopTest {
     val DEGREES_TO_MILES = 69 // Nice
 
     // Test Stops
-    val downtownStation = Stop(0, "downtownStation", 48.7499, -122.4762)
-    val downtownStation2 = Stop(0, "downtownStation", 48.7499, -122.4762)
-    val wwu = Stop(1, "WWU", 48.7344, -122.4865)
+    val downtownStation = Stop(0,0, "downtownStation", 48.7499, -122.4762, 0)
+    val downtownStation2 = Stop(0, 0,"downtownStation", 48.7499, -122.4762, 0)
+    val wwu = Stop(1, 0,"WWU", 48.7344, -122.4865, 0)
 
     @Test
     fun getDistance() {
