@@ -3,11 +3,12 @@
 // CSCI 412
 package com.example.onestopaway
 
-import android.provider.ContactsContract
 import android.util.Log
+import java.io.Serializable
 import java.time.LocalTime
-import kotlin.math.abs
 import kotlin.math.ceil
+import kotlin.math.pow
+import kotlin.math.sqrt
 
 /**
  * A class that contains the data for a Stop
@@ -19,9 +20,9 @@ import kotlin.math.ceil
  * @param isFavorite 1 if the stop is favorited 0 otherwise
  * @constructor Creates a stop based on the given id, number, name, latitude, and longitude
  */
-class Stop {
+class Stop: Serializable {
     // Constants
-    val DEGREES_TO_MILES = 69 // Nice
+    val DEGREES_TO_MILES = 69.0 // Nice
 
     // Variables
     private var _name: String = "Default Name"
@@ -89,7 +90,7 @@ class Stop {
      * @return the Manhattan distance from the given location to the stop in degrees
      */
     fun getDistance(latitude: Double, longitude: Double): Double{
-        return (abs(_latitude - latitude) + abs(_longitude - longitude)) * DEGREES_TO_MILES
+        return (sqrt((latitude - _latitude).pow(2) + (longitude - _longitude).pow(2))) * DEGREES_TO_MILES
     }
 
     /**
@@ -121,19 +122,15 @@ class Stop {
      * Gets the estimated time until the next bus arrives based on scheduled time
      * @return the estimated time until the next bus arrives at the stop in minutes
      */
-    fun updateTimeUntilNextBus(database: DatabaseManager){
-        val currentHour = LocalTime.now().hour.toString()
-
-        val routesData = database.getClosestArrivalTimesByStop(_id, currentHour)
-        val routes = mutableListOf<Route>()
-
-        routesData.forEach {
-            routes.add(Route(it))
+    suspend fun updateTimeUntilNextBus(timeData : List<String>){
+        val currentTime = LocalTime.now()
+        val times = mutableListOf<LocalTime>()
+        timeData.forEach {
+            times.add(LocalTime.parse(it))
         }
-
-        routes.sortedBy { it.arrival }
-        if(routes.size > 0) {
-            _minutesToNextBus = routes[0].arrival.minute - LocalTime.now().minute
+        times.sortedBy { it }
+        if(times.size > 0) {
+            _minutesToNextBus = times[0].minute - currentTime.minute
         }else{
             _minutesToNextBus = -1
         }
