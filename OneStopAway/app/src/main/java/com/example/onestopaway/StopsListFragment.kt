@@ -38,6 +38,7 @@ class StopsListFragment : Fragment() {
         } else if(parentFragment is FavoritesFragment){
             viewModel.populateFavorites()
         }
+        stops = viewModel.stops
     }
 
     override fun onAttach(context: Context) {
@@ -56,7 +57,7 @@ class StopsListFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_stops_list, container, false)
-        recyclerAdapter = StopRecyclerViewAdapter(viewModel.stops, listener)
+        recyclerAdapter = StopRecyclerViewAdapter(stops, listener)
 
 
         // Set the adapter

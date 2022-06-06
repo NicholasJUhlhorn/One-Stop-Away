@@ -47,9 +47,9 @@ class Trip {
         _isFavorite = tripData[2].toShort()
         
         // Get Route Stops
-        val db = DatabaseManager.getDatabase(context)
-        val stopData = db.getStopsOnRoute(_id)
-        db.close()
+//        val db = DatabaseManager.getDatabase(context)
+//        val stopData = db.getStopsOnRoute(_id)
+//        db.close()
     }
 
     companion object {

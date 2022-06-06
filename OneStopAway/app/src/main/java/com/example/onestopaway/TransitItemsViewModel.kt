@@ -47,7 +47,6 @@ class TransitItemsViewModel(private val repository: DataRepository): ViewModel()
         // Reset the stop and route list
         _stops = repository.readAllStops().toMutableList()
         _trips = repository.readAllTrips().toMutableList()
-
     }
 
     fun populateTrips() = viewModelScope.launch{
@@ -89,10 +88,6 @@ class TransitItemsViewModel(private val repository: DataRepository): ViewModel()
 
         }
 
-        routeStrings.forEach {
-            // Make new route from row
-            val newTrip = Trip(it, _context)
-        }
     }
     fun populateDatabase() = viewModelScope.launch(Dispatchers.IO) {
         repository.populateDatabase()

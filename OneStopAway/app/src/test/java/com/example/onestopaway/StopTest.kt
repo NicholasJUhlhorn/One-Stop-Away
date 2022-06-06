@@ -18,7 +18,7 @@ class StopTest {
     fun getDistance() {
         val distance = downtownStation.getDistance(wwu.latitude, wwu.longitude)
 
-        return assertEquals(1.7802, distance, 0.0001)
+        return assertEquals(1.28, distance, 0.01)
     }
 
     @Test

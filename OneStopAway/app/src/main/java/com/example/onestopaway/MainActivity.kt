@@ -157,10 +157,10 @@ fun getLocation(): LatLng {
         checkSelfPermission(ACCESS_FINE_LOCATION) != PERMISSION_GRANTED) {
         ActivityCompat.requestPermissions(this, arrayOf(ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION), 1)
     } else {
-        client.lastLocation.addOnSuccessListener {
-                currentLoc = LatLng(it.latitude, it.longitude)
-                Log.d("LOC", currentLoc.toString())
-        }
+//        client.lastLocation.addOnSuccessListener {
+//                currentLoc = LatLng(it.latitude, it.longitude)
+//                Log.d("LOC", currentLoc.toString())
+//        }
     }
     return currentLoc
 }

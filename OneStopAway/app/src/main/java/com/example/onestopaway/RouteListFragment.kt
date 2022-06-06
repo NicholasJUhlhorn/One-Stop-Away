@@ -1,6 +1,7 @@
 package com.example.onestopaway
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -44,6 +45,7 @@ class RouteListFragment : Fragment() {
                 }
 
                 adapter = RouteRecyclerViewAdapter(trips)
+                Log.d("Why", trips.size.toString())
             }
         }
         return view
