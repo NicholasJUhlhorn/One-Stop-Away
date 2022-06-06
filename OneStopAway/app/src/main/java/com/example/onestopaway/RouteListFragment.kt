@@ -1,5 +1,6 @@
 package com.example.onestopaway
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -14,7 +15,7 @@ import androidx.fragment.app.activityViewModels
 /**
  * A fragment representing a list of Items.
  */
-class RouteListFragment : Fragment() {
+class RouteListFragment : Fragment(), StopListener {
 
     private var columnCount = 1
     private val viewModel : TransitItemsViewModel by activityViewModels {
@@ -49,7 +50,7 @@ class RouteListFragment : Fragment() {
                     else -> GridLayoutManager(context, columnCount)
                 }
 
-                adapter = RouteRecyclerViewAdapter(trips)
+                adapter = RouteRecyclerViewAdapter(trips, this)
                 Log.d("Why", trips.size.toString())
             }
         }
@@ -67,5 +68,21 @@ class RouteListFragment : Fragment() {
             RouteListFragment().apply {
                 listener = lr
             }
+    }
+
+    override fun onStopClicked(stop: Stop) {
+        TODO("Not yet implemented")
+    }
+
+    override fun onRouteClicked(route: Trip) {
+        (activity as MainActivity).onTripClick()
+    }
+
+    override fun onStopFavorited(stop: Stop) {
+        TODO("Not yet implemented")
+    }
+
+    override fun onTripFavorited(route: Trip) {
+        TODO("Not yet implemented")
     }
 }

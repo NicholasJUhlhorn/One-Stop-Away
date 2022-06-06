@@ -195,4 +195,17 @@ override fun onRequestPermissionsResult(
         TODO("Not yet implemented")
     }
 
+    override fun onTripFavorited(route: Route) {
+        TODO("Not yet implemented")
+    }
+
+    fun onTripClick(){
+        Intent(this, RouteDetailActivity::class.java).apply {
+            getLocation()
+            this.putExtra("latitude", currentLoc.latitude)
+            this.putExtra("longitude", currentLoc.longitude)
+            startActivity(this)
+        }
+    }
+
 }

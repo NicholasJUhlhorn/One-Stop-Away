@@ -6,15 +6,16 @@
         <entry key="..\:/Users/Ian/Documents/Code/one-stop-away/OneStopAway/app/src/main/res/layout-land/activity_main.xml" value="0.3691432396251673" />
         <entry key="..\:/Users/Ian/Documents/Code/one-stop-away/OneStopAway/app/src/main/res/layout/activity_main.xml" value="0.5744791666666667" />
         <entry key="..\:/Users/Ian/Documents/Code/one-stop-away/OneStopAway/app/src/main/res/layout/activity_route_detail.xml" value="0.25" />
-        <entry key="..\:/Users/Ian/Documents/Code/one-stop-away/OneStopAway/app/src/main/res/layout/activity_stop_detail.xml" value="0.5" />
+        <entry key="..\:/Users/Ian/Documents/Code/one-stop-away/OneStopAway/app/src/main/res/layout/activity_stop_detail.xml" value="0.25" />
         <entry key="..\:/Users/Ian/Documents/Code/one-stop-away/OneStopAway/app/src/main/res/layout/fragment_favorites.xml" value="0.5744791666666667" />
         <entry key="..\:/Users/Ian/Documents/Code/one-stop-away/OneStopAway/app/src/main/res/layout/fragment_maps.xml" value="0.5604166666666667" />
         <entry key="..\:/Users/Ian/Documents/Code/one-stop-away/OneStopAway/app/src/main/res/layout/fragment_route.xml" value="0.5744791666666667" />
         <entry key="..\:/Users/Ian/Documents/Code/one-stop-away/OneStopAway/app/src/main/res/layout/fragment_route_list.xml" value="0.5744791666666667" />
         <entry key="..\:/Users/Ian/Documents/Code/one-stop-away/OneStopAway/app/src/main/res/layout/fragment_stop_details.xml" value="0.5744791666666667" />
-        <entry key="..\:/Users/Ian/Documents/Code/one-stop-away/OneStopAway/app/src/main/res/layout/fragment_stops.xml" value="0.33" />
+        <entry key="..\:/Users/Ian/Documents/Code/one-stop-away/OneStopAway/app/src/main/res/layout/fragment_stops.xml" value="0.67" />
         <entry key="..\:/Users/Ian/Documents/Code/one-stop-away/OneStopAway/app/src/main/res/layout/fragment_stops_list.xml" value="0.5604166666666667" />
         <entry key="..\:/Users/Ian/Documents/Code/one-stop-away/OneStopAway/app/src/main/res/menu/bottom_nav_menu.xml" value="0.5734375" />
+        <entry key="..\:/Users/Nicholas/Desktop/One-Stop-Away/OneStopAway/app/src/main/res/layout/activity_route_detail.xml" value="0.17831813576494426" />
         <entry key="..\:/Users/Nicholas/Desktop/One-Stop-Away/OneStopAway/app/src/main/res/layout/fragment_stops.xml" value="0.33" />
       </map>
     </option>
@@ -24,12 +25,5 @@
   </component>
   <component name="ProjectType">
     <option name="id" value="Android" />
-  </component>
-  <component name="VisualizationToolProject">
-    <option name="state">
-      <ProjectState>
-        <option name="scale" value="0.5604166666666667" />
-      </ProjectState>
-    </option>
   </component>
 </project>

@@ -51,6 +51,10 @@ class Trip {
         _stops = mutableListOf<Stop>()
     }
 
+    fun populateStops(stops: List<Stop>){
+        _stops =  stops.toMutableList()
+    }
+
     companion object {
         const val NAME_COL = "head_sign"
         const val TRIP_ID_COL = "trip_id"
