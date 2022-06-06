@@ -38,6 +38,8 @@ class StopsListFragment : Fragment() {
         } else if(parentFragment is FavoritesFragment){
             viewModel.populateFavorites()
         }
+        stops = listOf()
+        stops = viewModel.stops
     }
 
     override fun onAttach(context: Context) {
