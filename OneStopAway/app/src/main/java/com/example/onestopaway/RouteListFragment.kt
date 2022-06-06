@@ -24,8 +24,13 @@ class RouteListFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        viewModel.populateTrips()
+        //populate all trips if selected from main screen, or favorites if launched from fragment
+        if(activity is MainActivity && parentFragment == null) {
+            viewModel.populateTrips()
+        } else if(parentFragment is FavoritesFragment){
+            viewModel.populateFavorites()
+        }
+        trips = listOf()
         trips = viewModel.trips
 
     }

@@ -20,6 +20,7 @@ class Trip {
     private var _name = "Default Name"
     private var _id: Int = 0
     private var _isFavorite: Short = 0
+    private lateinit var _stops: MutableList<Stop>
 
     // Getters and (Setters)
     val name
@@ -28,6 +29,8 @@ class Trip {
         get() = _id
     val isFavorite
         get() = _isFavorite
+    val stops
+        get() = _stops
 
     // Constructor
     constructor(id: Int, name: String, isFavorite: Short, stops: List<Stop>){
@@ -41,15 +44,11 @@ class Trip {
      * @param tripData A List<String> of the trip data
      * @return Trip created from the Database data
      */
-    constructor(tripData: List<String>, stopsOnTrip: List<Stop>){
+    constructor(tripData: List<String>){
         _id =   tripData[0].toInt()
         _name = tripData[1]
         _isFavorite = tripData[2].toShort()
-        
-        // Get Route Stops
-//        val db = DatabaseManager.getDatabase(context)
-//        val stopData = db.getStopsOnRoute(_id)
-//        db.close()
+        _stops = mutableListOf<Stop>()
     }
 
     companion object {
